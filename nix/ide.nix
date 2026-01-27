@@ -118,6 +118,12 @@
       action = "<cmd>lua _G.NuclearTS()<CR>";
       options.desc = "Nuclear TS Restart";
     }
+    {
+      mode = "n";
+      key = "<leader>rn";
+      action = "<cmd>lua vim.lsp.buf.rename()<CR>";
+      options.desc = "Rename Symbol (LSP)";
+    }
     # --- Search & UI ---
     {
       mode = "n";
@@ -261,8 +267,25 @@
       settings = {
         sources = [{ name = "nvim_lsp"; } { name = "path"; } { name = "buffer"; } { name = "luasnip"; }];
         mapping = {
-          "<CR>" = "cmp.mapping.confirm({ select = true })";
+          # Use Tab to cycle through suggestions
           "<Tab>" = "cmp.mapping.select_next_item()";
+          "<S-Tab>" = "cmp.mapping.select_prev_item()";
+
+          # IntelliJ-style: Enter replaces the existing text
+          "<CR>" = ''
+            cmp.mapping.confirm({
+              behavior = cmp.ConfirmBehavior.Replace,
+              select = true,
+            })
+          '';
+
+          # Optional: Use Shift+Enter to just insert (without replacing)
+          "<S-CR>" = ''
+            cmp.mapping.confirm({
+              behavior = cmp.ConfirmBehavior.Insert,
+              select = true,
+            })
+          '';
         };
       };
     };
