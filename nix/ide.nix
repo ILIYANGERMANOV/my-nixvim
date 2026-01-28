@@ -66,6 +66,12 @@
     # --- TypeScript / Web Tools ---
     {
       mode = "n";
+      key = "<leader>e";
+      action = "<cmd>lua vim.diagnostic.open_float()<CR>";
+      options.desc = "Show line diagnostics";
+    }
+    {
+      mode = "n";
       key = "<leader>fm";
       action = "<cmd>lua require('conform').format()<CR>";
       options.desc = "Format (Biome)";
