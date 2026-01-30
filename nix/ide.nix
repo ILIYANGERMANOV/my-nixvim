@@ -204,9 +204,10 @@
 
     telescope = {
       enable = true;
+      extensions.live-grep-args.enable = true;
       keymaps = {
         "<leader>ff" = "find_files";
-        "<leader>fg" = "live_grep";
+        "<leader>fg" = "live_grep_args";
       };
     };
 
@@ -306,7 +307,6 @@
     pkgs.fd
     pkgs.nixpkgs-fmt
     pkgs.xdg-utils
-    pkgs.biome
     pkgs.nodePackages.typescript-language-server
     pkgs.vscode-langservers-extracted
   ];

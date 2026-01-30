@@ -33,7 +33,6 @@
             pkgs.corepack
             pkgs.nodePackages.typescript
             pkgs.nodePackages.typescript-language-server
-            pkgs.biome
           ];
           commonEnv = {
             OTEL_SERVICE_NAME = "frontline-web-localhost";
