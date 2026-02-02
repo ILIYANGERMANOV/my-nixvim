@@ -3,6 +3,11 @@
 {
   colorschemes.catppuccin.enable = true;
 
+  env = {
+    LANG = "en_US.UTF-8";
+    LC_ALL = "en_US.UTF-8";
+  };
+
   globals = {
     mapleader = " ";
     maplocalleader = " ";
