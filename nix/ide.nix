@@ -32,30 +32,35 @@
   clipboard.register = "unnamedplus";
 
   extraConfigLua = ''
-    -- Nuclear TypeScript Reset
-    -- Kills the TSServer client and forces a restart
-    _G.NuclearTS = function()
-      local notify = vim.notify
-      notify("☢️  Initiating TypeScript Nuclear Reset...", vim.log.levels.WARN)
+     -- Nuclear TypeScript Reset
+     -- Kills the TSServer client and forces a restart
+     _G.NuclearTS = function()
+       local notify = vim.notify
+       notify("☢️  Initiating TypeScript Nuclear Reset...", vim.log.levels.WARN)
 
-      local get_clients = vim.lsp.get_clients or vim.lsp.get_active_clients
-      local clients = get_clients({ name = "typescript-tools" }) -- or "ts_ls"
+       local get_clients = vim.lsp.get_clients or vim.lsp.get_active_clients
+       local clients = get_clients({ name = "typescript-tools" }) -- or "ts_ls"
 
-      if #clients == 0 then
-         -- Fallback if using standard lspconfig
-         clients = get_clients({ name = "ts_ls" })
-      end
+       if #clients == 0 then
+          -- Fallback if using standard lspconfig
+          clients = get_clients({ name = "ts_ls" })
+       end
 
-      for _, client in ipairs(clients) do
-        client.stop()
-      end
+       for _, client in ipairs(clients) do
+         client.stop()
+       end
 
-      vim.defer_fn(function()
-        vim.cmd("LspStart typescript-tools")
-        vim.cmd("LspStart ts_ls")
-        notify("✅ TS Server Revived.", vim.log.levels.INFO)
-      end, 1000)
-    end
+       vim.defer_fn(function()
+         vim.cmd("LspStart typescript-tools")
+         vim.cmd("LspStart ts_ls")
+         notify("✅ TS Server Revived.", vim.log.levels.INFO)
+       end, 1000)
+     end
+
+    -- Integration between nvim-autopairs and nvim-cmp
+    local cmp_autopairs = require('nvim-autopairs.completion.cmp')
+    local cmp = require('cmp')
+    cmp.event:on('confirm_done', cmp_autopairs.on_confirm_done())
   '';
 
   keymaps = [
@@ -262,7 +267,20 @@
         # Note: ts_ls is disabled because we use typescript-tools above
       };
     };
-
+    nvim-autopairs = {
+      enable = true;
+      settings = {
+        check_ts = true; # Use treesitter to check for a pair
+        ts_config = {
+          lua = [ "string" "source" ];
+          javascript = [ "string" "template_string" ];
+        };
+        # This allows it to work with nvim-cmp
+        fast_wrap = {
+          enable = true;
+        };
+      };
+    };
     conform-nvim = {
       enable = true;
       settings = {
