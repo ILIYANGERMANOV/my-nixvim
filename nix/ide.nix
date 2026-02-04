@@ -137,6 +137,12 @@
     }
     {
       mode = "n";
+      key = "<leader>oi";
+      action = "<cmd>TSToolsRemoveUnused<CR>";
+      options.desc = "Clean Unused Imports (TS)";
+    }
+    {
+      mode = "n";
       key = "<leader>lx";
       action = "<cmd>lua _G.NuclearTS()<CR>";
       options.desc = "Nuclear TS Restart";
