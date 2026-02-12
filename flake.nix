@@ -19,7 +19,6 @@
       devShells = eachSystem (pkgs:
         let
           ideModule = import ./nix/ide.nix;
-
           nvimPkg = nixvim.legacyPackages.${pkgs.system}.makeNixvimWithModule {
             inherit pkgs;
             module = ideModule;
@@ -33,25 +32,17 @@
             pkgs.corepack
             pkgs.nodePackages.typescript
             pkgs.nodePackages.typescript-language-server
+            pkgs.nil # The Nix Language Server
+            pkgs.nixpkgs-fmt
           ];
-          commonEnv = {
-            OTEL_SERVICE_NAME = "frontline-web-localhost";
-            OTEL_EXPORTER_OTLP_ENDPOINT = "http://localhost:4318";
-            OTEL_EXPORTER_OTLP_PROTOCOL = "http/protobuf";
-          };
         in
         {
           default = pkgs.mkShell {
-            env = commonEnv;
-            packages = basePackages;
-          };
-
-          ide = pkgs.mkShell {
-            env = commonEnv;
             packages = basePackages ++ [ nvimPkg ];
 
             shellHook = ''
-              echo "Web IDE Environment Loaded. Run 'nvim' to start."
+              echo "🔮NixVim IDE Environment Loaded"
+              echo "Run 'nvim' to start."
             '';
           };
         });

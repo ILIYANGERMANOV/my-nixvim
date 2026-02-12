@@ -155,6 +155,13 @@
         elixirls = {
           enable = true;
         };
+        nil_ls = {
+          enable = true;
+          settings = {
+            formatting.command = [ "nixpkgs-fmt" ];
+            nix.flake.autoArchive = true; # Helps with flake path resolution
+          };
+        };
       };
     };
     nvim-autopairs = {
