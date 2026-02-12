@@ -8,32 +8,31 @@
     };
   };
 
-  outputs =
-    { nixpkgs, nixvim, ... }:
+  outputs = { nixpkgs, nixvim, systems, ... }:
     let
-      eachSystem =
-        f:
-        nixpkgs.lib.genAttrs nixpkgs.lib.systems.flakeExposed (system: f nixpkgs.legacyPackages.${system});
+      eachSystem = f: nixpkgs.lib.genAttrs (import systems) (system:
+        f (import nixpkgs { inherit system; })
+      );
     in
     {
       devShells = eachSystem (pkgs:
         let
+          system = pkgs.stdenv.hostPlatform.system;
           ideModule = import ./nix/ide.nix;
-          nvimPkg = nixvim.legacyPackages.${pkgs.system}.makeNixvimWithModule {
+          nvimPkg = nixvim.legacyPackages.${system}.makeNixvimWithModule {
             inherit pkgs;
             module = ideModule;
           };
-
-          basePackages = [
-            pkgs.docker-client
-            pkgs.git
-            pkgs.git-lfs
-            pkgs.nodejs_24
-            pkgs.corepack
-            pkgs.nodePackages.typescript
-            pkgs.nodePackages.typescript-language-server
-            pkgs.nil # The Nix Language Server
-            pkgs.nixpkgs-fmt
+          basePackages = with pkgs; [
+            docker-client
+            git
+            git-lfs
+            nodejs_24
+            corepack
+            nodePackages.typescript
+            nodePackages.typescript-language-server
+            nil
+            nixpkgs-fmt
           ];
         in
         {
@@ -41,7 +40,7 @@
             packages = basePackages ++ [ nvimPkg ];
 
             shellHook = ''
-              echo "🔮NixVim IDE Environment Loaded"
+              echo "🔮 NixVim IDE Environment Loaded"
               echo "Run 'nvim' to start."
             '';
           };
