@@ -154,6 +154,10 @@
         # Elixir LSP
         elixirls = {
           enable = true;
+          settings = {
+            dialyzerEnabled = false;
+            fetchDeps = false;
+          };
         };
         nil_ls = {
           enable = true;
