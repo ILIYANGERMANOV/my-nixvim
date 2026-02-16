@@ -219,14 +219,6 @@
               select = true,
             })
           '';
-
-          # Optional: Use Shift+Enter to just insert (without replacing)
-          "<S-CR>" = ''
-            cmp.mapping.confirm({
-              behavior = cmp.ConfirmBehavior.Insert,
-              select = true,
-            })
-          '';
         };
       };
     };
