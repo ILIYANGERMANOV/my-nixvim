@@ -14,7 +14,12 @@
   { mode = "n"; key = "<leader>L"; action = "<C-w>L"; options.desc = "Move Window Right"; }
   { mode = "n"; key = "<leader>J"; action = "<C-w>J"; options.desc = "Move Window Down"; }
   { mode = "n"; key = "<leader>K"; action = "<C-w>K"; options.desc = "Move Window Up"; }
-
+  {
+    mode = "n";
+    key = "<leader>wp";
+    action = "<C-w>p";
+    options.desc = "Jump to Previous Window";
+  }
   # --- TypeScript / Web Tools ---
   {
     mode = "n";
