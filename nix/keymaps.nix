@@ -1,11 +1,4 @@
 [
-  {
-    mode = "n";
-    key = "<leader>fg";
-    action = "<cmd>lua require('telescope').extensions.live_grep_args.live_grep_args()<CR>";
-    options.desc = "Live Grep (Args)";
-  }
-
   { mode = "n"; key = "<leader>h"; action = "<C-w>h"; options.desc = "Focus Left"; }
   { mode = "n"; key = "<leader>l"; action = "<C-w>l"; options.desc = "Focus Right"; }
   { mode = "n"; key = "<leader>j"; action = "<C-w>j"; options.desc = "Focus Down"; }
