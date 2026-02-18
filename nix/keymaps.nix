@@ -1,4 +1,10 @@
 [
+  {
+    mode = "n";
+    key = "<leader>fa";
+    action = "<cmd>lua require('telescope.builtin').find_files({ hidden = true, no_ignore = true })<CR>";
+    options.desc = "Find All Files (Hidden & Ignored)";
+  }
   { mode = "n"; key = "<leader>h"; action = "<C-w>h"; options.desc = "Focus Left"; }
   { mode = "n"; key = "<leader>l"; action = "<C-w>l"; options.desc = "Focus Right"; }
   { mode = "n"; key = "<leader>j"; action = "<C-w>j"; options.desc = "Focus Down"; }
