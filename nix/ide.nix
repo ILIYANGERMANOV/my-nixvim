@@ -10,6 +10,7 @@
     ./core/auto-complete.nix
     ./core/search.nix
     ./core/lsp.nix
+    ./core/clipboard.nix
     ./languages/typescript.nix
     ./languages/nix.nix
     ./languages/mdc.nix
@@ -35,8 +36,6 @@
     ignorecase = true;
     smartcase = true;
   };
-
-  clipboard.register = "unnamedplus";
 
   keymaps = import ./keymaps.nix;
 
