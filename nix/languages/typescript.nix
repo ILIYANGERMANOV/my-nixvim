@@ -9,6 +9,17 @@
       options.desc = "Clean Unused Imports (TS)";
     }
   ];
+  autoCmd = [
+    {
+      event = [ "BufRead" "BufNewFile" ];
+      pattern = [ "*.mdx" ];
+      command = "set filetype=mdx";
+    }
+  ];
+
+  extraConfigLua = ''
+    vim.treesitter.language.register('markdown', 'mdx')
+  '';
 
   plugins = {
     treesitter.grammarPackages = with pkgs.vimPlugins.nvim-treesitter.builtGrammars; [
@@ -17,14 +28,19 @@
       javascript
       html
       css
+      markdown
+      markdown_inline
     ];
-
 
     typescript-tools = {
       enable = true;
       settings = {
         # Tsserver/vtsls options can go here
         expose_as_code_action = "all";
+        tsserver_file_preferences = {
+          includeInlayParameterNameHints = "all";
+          includeInlayFunctionParameterTypeHints = true;
+        };
       };
     };
 
@@ -45,6 +61,7 @@
       javascriptreact = [ "biome" ];
       json = [ "biome" ];
       css = [ "biome" ];
+      mdx = [ "biome" ];
     };
   };
 
