@@ -11,15 +11,14 @@
   ];
 
   plugins = {
-    treesitter = {
-      grammarPackages = with pkgs.vimPlugins.nvim-treesitter.builtGrammars; [
-        typescript
-        tsx
-        javascript
-        html
-        css
-      ];
-    };
+    treesitter.grammarPackages = with pkgs.vimPlugins.nvim-treesitter.builtGrammars; [
+      typescript
+      tsx
+      javascript
+      html
+      css
+    ];
+
 
     typescript-tools = {
       enable = true;
@@ -29,34 +28,21 @@
       };
     };
 
-    # Biome LSP primarily for linting details inside editor
-    lsp = {
-      enable = true;
-      servers = {
-        biome.enable = true;
-        html.enable = true;
-        cssls.enable = true;
-      };
+    lsp.servers = {
+      biome.enable = true;
+      html.enable = true;
+      cssls.enable = true;
     };
-    nvim-autopairs = {
-      settings = {
-        ts_config = {
-          javascript = [ "string" "template_string" ];
-        };
-      };
+    nvim-autopairs.settings.ts_config = {
+      javascript = [ "string" "template_string" ];
     };
-    conform-nvim = {
-      enable = true;
-      settings = {
-        formatters_by_ft = {
-          typescript = [ "biome" ];
-          typescriptreact = [ "biome" ];
-          javascript = [ "biome" ];
-          javascriptreact = [ "biome" ];
-          json = [ "biome" ];
-          css = [ "biome" ];
-        };
-      };
+    conform-nvim.settings.formatters_by_ft = {
+      typescript = [ "biome" ];
+      typescriptreact = [ "biome" ];
+      javascript = [ "biome" ];
+      javascriptreact = [ "biome" ];
+      json = [ "biome" ];
+      css = [ "biome" ];
     };
   };
 

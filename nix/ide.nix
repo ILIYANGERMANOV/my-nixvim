@@ -8,6 +8,7 @@
     ./core/git.nix
     ./core/auto-complete.nix
     ./languages/typescript.nix
+    ./languages/nix.nix
   ];
 
   env = {
@@ -77,7 +78,6 @@
         json
         yaml
         markdown
-        nix
         bash
         dockerfile
       ];
@@ -85,15 +85,6 @@
 
     lsp = {
       enable = true;
-      servers = {
-        nil_ls = {
-          enable = true;
-          settings = {
-            formatting.command = [ "nixpkgs-fmt" ];
-            nix.flake.autoArchive = true; # Helps with flake path resolution
-          };
-        };
-      };
     };
 
     comment.enable = true;
