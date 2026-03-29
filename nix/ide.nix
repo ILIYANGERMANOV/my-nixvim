@@ -2,6 +2,7 @@
 
 {
   imports = [
+    ./core/window.nix
     ./languages/typescript.nix
   ];
 
@@ -18,6 +19,8 @@
   };
 
   opts = {
+    termguicolors = true;
+
     number = true;
     relativenumber = true;
     shiftwidth = 2;
@@ -26,11 +29,6 @@
     breakindent = true;
     ignorecase = true;
     smartcase = true;
-
-    # --- Window/Split Behavior ---
-    splitbelow = true;
-    splitright = true;
-    termguicolors = true;
   };
 
   clipboard.register = "unnamedplus";
@@ -99,7 +97,7 @@
           "^.git/"
           "^dist/"
           "^build/"
-          "target/" # For Elixir/Rust
+          "target/"
         ];
       };
       extensions = {
@@ -125,10 +123,6 @@
         nix
         bash
         dockerfile
-        # Elixir Grammars
-        elixir
-        heex
-        eex
       ];
     };
 
@@ -200,7 +194,5 @@
     pkgs.fd
     pkgs.nixpkgs-fmt
     pkgs.xdg-utils
-    # Elixir Tools
-    pkgs.elixir-ls
   ];
 }
