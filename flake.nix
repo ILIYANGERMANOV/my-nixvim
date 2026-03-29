@@ -21,32 +21,46 @@
       devShells = eachSystem (pkgs:
         let
           system = pkgs.stdenv.hostPlatform.system;
-          ideModule = import ./nix/ide.nix;
-          nvimPkg = nixvim.legacyPackages.${system}.makeNixvimWithModule {
+
+          mkNvim = profile: nixvim.legacyPackages.${system}.makeNixvimWithModule {
             inherit pkgs;
-            module = ideModule;
+            module = import ./nix/ide.nix;
+            extraSpecialArgs = { inherit profile; };
           };
+
           basePackages = with pkgs; [
-            docker-client
             git
             git-lfs
+            nil
+            nixpkgs-fmt
+          ];
+
+          webPackages = basePackages ++ (with pkgs; [
             nodejs_24
             corepack
             nodePackages.typescript
             nodePackages.typescript-language-server
-            nil
-            nixpkgs-fmt
-          ];
+            docker-client
+          ]);
         in
-        {
-          default = pkgs.mkShell {
-            packages = basePackages ++ [ nvimPkg ];
-
+        rec {
+          web = pkgs.mkShell {
+            packages = webPackages ++ [ (mkNvim "web") ];
             shellHook = ''
-              echo "🔮 NixVim IDE Environment Loaded"
+              echo "🌐 NixVim Web Environment Loaded"
               echo "Run 'nvim' to start."
             '';
           };
+
+          haskell = pkgs.mkShell {
+            packages = [ (mkNvim "haskell") ];
+            shellHook = ''
+              echo "λ NixVim Haskell Environment Loaded"
+              echo "Run 'nvim' to start."
+            '';
+          };
+
+          default = web;
         });
     };
 }
