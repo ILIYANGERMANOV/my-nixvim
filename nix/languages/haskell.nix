@@ -1,6 +1,33 @@
 { pkgs, ... }:
 
 {
+  keymaps = [
+    {
+      mode = "n";
+      key = "<leader>tt";
+      action = ''<cmd>lua require("toggleterm").exec("cabal test --test-show-details=direct", 1)<CR>'';
+      options.desc = "Run Cabal Tests";
+    }
+    {
+      mode = "n";
+      key = "<leader>rr";
+      action = ''<cmd>lua require("toggleterm").exec("cabal repl", 1)<CR>'';
+      options.desc = "Haskell REPL";
+    }
+    {
+      mode = "n";
+      key = "<leader>hg";
+      action = "<cmd>Telescope hoogle<CR>";
+      options.desc = "Hoogle (Live)";
+    }
+    {
+      mode = "n";
+      key = "<leader>lx";
+      action = "<cmd>lua _G.HlsRestart()<CR>";
+      options.desc = "Restart Haskell LSP (HLS)";
+    }
+  ];
+
   extraConfigLua = ''
     require("telescope").load_extension("hoogle")
 
@@ -12,15 +39,6 @@
       vim.notify("HLS restarted", vim.log.levels.INFO)
     end
   '';
-
-  keymaps = [
-    {
-      mode = "n";
-      key = "<leader>lx";
-      action = "<cmd>lua _G.HlsRestart()<CR>";
-      options.desc = "Restart Haskell LSP (HLS)";
-    }
-  ];
 
   autoCmd = [
     {

@@ -4,6 +4,12 @@
   keymaps = [
     {
       mode = "n";
+      key = "<leader>tt";
+      action = ''<cmd>lua require("toggleterm").exec("npm test -- --watchAll=false", 1)<CR>'';
+      options.desc = "Run Tests (NPM)";
+    }
+    {
+      mode = "n";
       key = "<leader>oi";
       action = "<cmd>TSToolsRemoveUnused<CR>";
       options.desc = "Clean Unused Imports (TS)";
