@@ -1,16 +1,6 @@
 { ... }:
 
 {
-  keymaps = [
-    {
-      mode = "n";
-      key = "<leader>fm";
-      action = "<cmd>lua require('conform').format()<CR>";
-      options.desc = "Format";
-    }
-  ];
-
-
   extraConfigLua = ''
     -- Integration between nvim-autopairs and nvim-cmp
     local cmp_autopairs = require('nvim-autopairs.completion.cmp')
@@ -19,27 +9,6 @@
   '';
 
   plugins = {
-    nvim-autopairs = {
-      enable = true;
-      settings = {
-        check_ts = true; # Use treesitter to check for a pair
-        ts_config = {
-          lua = [ "string" "source" ];
-        };
-        # This allows it to work with nvim-cmp
-        fast_wrap = {
-          enable = true;
-        };
-      };
-    };
-
-    conform-nvim = {
-      enable = true;
-      settings = {
-        format_on_save = { timeout_ms = 2000; lsp_fallback = true; };
-      };
-    };
-
     cmp = {
       enable = true;
       autoEnableSources = true;
@@ -62,6 +31,20 @@
               select = true,
             })
           '';
+        };
+      };
+    };
+
+    nvim-autopairs = {
+      enable = true;
+      settings = {
+        check_ts = true; # Use treesitter to check for a pair
+        ts_config = {
+          lua = [ "string" "source" ];
+        };
+        # This allows it to work with nvim-cmp
+        fast_wrap = {
+          enable = true;
         };
       };
     };

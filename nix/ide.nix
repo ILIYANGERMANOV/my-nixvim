@@ -6,6 +6,7 @@
     ./core/theme.nix
     ./core/file-tree.nix
     ./core/git.nix
+    ./core/format.nix
     ./core/auto-complete.nix
     ./languages/typescript.nix
     ./languages/nix.nix
