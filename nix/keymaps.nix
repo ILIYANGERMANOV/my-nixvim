@@ -19,7 +19,6 @@
     action = "<C-w>p";
     options.desc = "Jump to Previous Window";
   }
-  # --- TypeScript / Web Tools ---
   {
     mode = "n";
     key = "<leader>e";
@@ -30,7 +29,7 @@
     mode = "n";
     key = "<leader>fm";
     action = "<cmd>lua require('conform').format()<CR>";
-    options.desc = "Format (Biome/Mix)";
+    options.desc = "Format";
   }
   {
     mode = "n";
@@ -46,41 +45,9 @@
   }
   {
     mode = "n";
-    key = "<leader>cl";
-    action = "<cmd>!biome lint .<CR>";
-    options.desc = "Check Lint (Biome CLI)";
-  }
-  {
-    mode = "n";
-    key = "<leader>rr";
-    action = "<cmd>ToggleTerm direction=float name=NodeREPL<CR>node<CR>";
-    options.desc = "Node REPL";
-  }
-  {
-    mode = "n";
-    key = "<leader>rq";
-    action = "<cmd>ToggleTerm<CR>";
-    options.desc = "Hide REPL";
-  }
-  {
-    mode = "n";
     key = "<leader>tt";
     action = ''<cmd>lua require("toggleterm").exec("npm test", 1)<CR>'';
     options.desc = "Run Tests (NPM)";
-  }
-
-  # --- Elixir Tools ---
-  {
-    mode = "n";
-    key = "<leader>xr";
-    action = "<cmd>ToggleTerm direction=float name=IEx<CR>iex -S mix<CR>";
-    options.desc = "Elixir REPL (IEx)";
-  }
-  {
-    mode = "n";
-    key = "<leader>xt";
-    action = ''<cmd>lua require("toggleterm").exec("mix test", 1)<CR>'';
-    options.desc = "Run Tests (Mix)";
   }
 
   {
@@ -88,18 +55,6 @@
     key = "<leader>ca";
     action = "<cmd>lua vim.lsp.buf.code_action()<CR>";
     options.desc = "Code Actions";
-  }
-  {
-    mode = "n";
-    key = "<leader>oi";
-    action = "<cmd>TSToolsRemoveUnused<CR>";
-    options.desc = "Clean Unused Imports (TS)";
-  }
-  {
-    mode = "n";
-    key = "<leader>lx";
-    action = "<cmd>lua _G.NuclearTS()<CR>";
-    options.desc = "Nuclear TS Restart";
   }
   {
     mode = "n";

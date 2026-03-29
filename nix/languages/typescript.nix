@@ -1,6 +1,15 @@
 { pkgs, ... }:
 
 {
+  keymaps = [
+    {
+      mode = "n";
+      key = "<leader>oi";
+      action = "<cmd>TSToolsRemoveUnused<CR>";
+      options.desc = "Clean Unused Imports (TS)";
+    }
+  ];
+
   plugins = {
     treesitter = {
       grammarPackages = with pkgs.vimPlugins.nvim-treesitter.builtGrammars; [
