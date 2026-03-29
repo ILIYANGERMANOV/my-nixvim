@@ -13,12 +13,6 @@
   }
   {
     mode = "n";
-    key = "<leader>fm";
-    action = "<cmd>lua require('conform').format()<CR>";
-    options.desc = "Format";
-  }
-  {
-    mode = "n";
     key = "<leader>gd";
     action = "<cmd>Telescope lsp_definitions<CR>";
     options.desc = "Go to Definition";
@@ -66,13 +60,6 @@
     key = "<leader>bk";
     action = "<cmd>bd<CR>";
     options.desc = "Kill Buffer";
-  }
-  # --- Git ---
-  {
-    mode = "n";
-    key = "<leader>gs";
-    action = "<cmd>Neogit<CR>";
-    options.desc = "Git Status (Neogit)";
   }
   # --- Terminal mode ---
   {

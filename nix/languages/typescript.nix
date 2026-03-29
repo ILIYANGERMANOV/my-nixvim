@@ -33,9 +33,11 @@
       html.enable = true;
       cssls.enable = true;
     };
+
     nvim-autopairs.settings.ts_config = {
       javascript = [ "string" "template_string" ];
     };
+
     conform-nvim.settings.formatters_by_ft = {
       typescript = [ "biome" ];
       typescriptreact = [ "biome" ];

@@ -1,6 +1,16 @@
 { ... }:
 
 {
+  keymaps = [
+    {
+      mode = "n";
+      key = "<leader>fm";
+      action = "<cmd>lua require('conform').format()<CR>";
+      options.desc = "Format";
+    }
+  ];
+
+
   extraConfigLua = ''
     -- Integration between nvim-autopairs and nvim-cmp
     local cmp_autopairs = require('nvim-autopairs.completion.cmp')
@@ -27,9 +37,6 @@
       enable = true;
       settings = {
         format_on_save = { timeout_ms = 2000; lsp_fallback = true; };
-        formatters_by_ft = {
-          nix = [ "nixpkgs_fmt" ];
-        };
       };
     };
 
@@ -37,7 +44,12 @@
       enable = true;
       autoEnableSources = true;
       settings = {
-        sources = [{ name = "nvim_lsp"; } { name = "path"; } { name = "buffer"; } { name = "luasnip"; }];
+        sources = [
+          { name = "nvim_lsp"; }
+          { name = "path"; }
+          { name = "buffer"; }
+          { name = "luasnip"; }
+        ];
         mapping = {
           # Use Tab to cycle through suggestions
           "<Tab>" = "cmp.mapping.select_next_item()";
