@@ -113,6 +113,15 @@
 
     telescope = {
       enable = true;
+      settings.defaults = {
+        file_ignore_patterns = [
+          "^node_modules/"
+          "^.git/"
+          "^dist/"
+          "^build/"
+          "target/" # For Elixir/Rust
+        ];
+      };
       extensions = {
         live-grep-args.enable = true;
         ui-select.enable = true;
