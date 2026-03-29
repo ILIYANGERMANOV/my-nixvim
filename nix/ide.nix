@@ -3,10 +3,9 @@
 {
   imports = [
     ./core/window.nix
+    ./core/theme.nix
     ./languages/typescript.nix
   ];
-
-  colorschemes.catppuccin.enable = true;
 
   env = {
     LANG = "en_US.UTF-8";
@@ -19,8 +18,6 @@
   };
 
   opts = {
-    termguicolors = true;
-
     number = true;
     relativenumber = true;
     shiftwidth = 2;
