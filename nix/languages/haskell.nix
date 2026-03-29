@@ -32,11 +32,9 @@
     require("telescope").load_extension("hoogle")
 
     _G.HlsRestart = function()
-      for _, client in ipairs(vim.lsp.get_clients({ name = "hls" })) do
-        vim.lsp.stop_client(client.id)
-      end
-      vim.cmd("edit")
-      vim.notify("HLS restarted", vim.log.levels.INFO)
+      vim.lsp.stop_client(vim.lsp.get_active_clients({ name = 'hls' }))
+      vim.cmd('edit')
+      vim.notify("♻️  HLS Restarted", vim.log.levels.INFO)
     end
   '';
 
