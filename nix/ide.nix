@@ -12,6 +12,7 @@
     ./core/lsp.nix
     ./core/clipboard.nix
     ./languages/typescript.nix
+    ./languages/haskell.nix
     ./languages/nix.nix
     ./languages/mdc.nix
   ];

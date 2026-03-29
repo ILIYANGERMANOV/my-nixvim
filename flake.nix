@@ -1,18 +1,21 @@
 {
+  description = "Pre-configured NixVim IDE";
+
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
-    systems.url = "github:nix-systems/default";
     nixvim = {
       url = "github:nix-community/nixvim";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
 
-  outputs = { nixpkgs, nixvim, systems, ... }:
+  outputs = { nixpkgs, nixvim, ... }:
     let
-      eachSystem = f: nixpkgs.lib.genAttrs (import systems) (system:
-        f (import nixpkgs { inherit system; })
-      );
+      eachSystem =
+        f:
+        nixpkgs.lib.genAttrs nixpkgs.lib.systems.flakeExposed (
+          system: f nixpkgs.legacyPackages.${system}
+        );
     in
     {
       devShells = eachSystem (pkgs:

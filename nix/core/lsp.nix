@@ -47,6 +47,7 @@
         markdown
         bash
         dockerfile
+        make
       ];
     };
 
