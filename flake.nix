@@ -9,7 +9,7 @@
     };
   };
 
-  outputs = { nixpkgs, nixvim, ... }:
+  outputs = { self, nixpkgs, nixvim, ... }:
     let
       eachSystem =
         f:
@@ -18,15 +18,33 @@
         );
     in
     {
+      lib = {
+        /** Neovim (haskell profile) with HLS and tools pinned to `hpkgs` — use from project flakes (e.g. shellFor + same hpkgs as the dev shell). */
+        mkHaskellNvim =
+          pkgs: hpkgs:
+          nixvim.legacyPackages.${pkgs.stdenv.hostPlatform.system}.makeNixvimWithModule {
+            inherit pkgs;
+            module = import "${self}/nix/ide.nix";
+            extraSpecialArgs = {
+              profile = "haskell";
+              inherit hpkgs;
+            };
+          };
+      };
+
       devShells = eachSystem (pkgs:
         let
           system = pkgs.stdenv.hostPlatform.system;
 
-          mkNvim = profile: nixvim.legacyPackages.${system}.makeNixvimWithModule {
-            inherit pkgs;
-            module = import ./nix/ide.nix;
-            extraSpecialArgs = { inherit profile; };
-          };
+          mkNvim =
+            profile:
+            nixvim.legacyPackages.${system}.makeNixvimWithModule {
+              inherit pkgs;
+              module = import ./nix/ide.nix;
+              extraSpecialArgs = {
+                inherit profile;
+              };
+            };
 
           basePackages = with pkgs; [
             git
@@ -48,14 +66,6 @@
             packages = webPackages ++ [ (mkNvim "web") ];
             shellHook = ''
               echo "🌐 NixVim Web IDE Loaded"
-              echo "Run 'nvim' to start."
-            '';
-          };
-
-          haskell = pkgs.mkShell {
-            packages = [ (mkNvim "haskell") ];
-            shellHook = ''
-              echo "λ NixVim Haskell IDE Loaded"
               echo "Run 'nvim' to start."
             '';
           };

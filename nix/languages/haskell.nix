@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ pkgs, lib, hpkgs ? null }:
 
 {
   keymaps = [
@@ -58,9 +58,8 @@
 
       servers.hls = {
         enable = true;
-        package = null;
+        package = if hpkgs != null then hpkgs.haskell-language-server else null;
         installGhc = false;
-        filetypes = [ "haskell" "lhaskell" "cabal" ];
         settings = {
           haskell = {
             formattingProvider = "fourmolu";
@@ -89,5 +88,13 @@
 
   extraPlugins = [
     pkgs.vimPlugins.telescope_hoogle
+  ];
+
+  extraPackages = lib.optionals (hpkgs != null) [
+    hpkgs.fourmolu
+    hpkgs.hlint
+    hpkgs.hoogle
+    hpkgs.cabal-install
+    hpkgs.haskell-language-server
   ];
 }
