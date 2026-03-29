@@ -1,4 +1,4 @@
-{ ... }:
+{ pkgs, ... }:
 
 {
   keymaps = [
@@ -18,4 +18,8 @@
       };
     };
   };
+
+  extraPackages = [
+    pkgs.nixpkgs-fmt
+  ];
 }
