@@ -35,7 +35,7 @@
   {
     mode = "n";
     key = "<leader>gd";
-    action = "<cmd>lua vim.lsp.buf.definition()<CR>";
+    action = "<cmd>Telescope lsp_definitions<CR>";
     options.desc = "Go to Definition";
   }
   {
