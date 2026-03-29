@@ -23,4 +23,25 @@
     splitbelow = true;
     splitright = true;
   };
+
+  plugins = {
+    toggleterm = {
+      enable = true;
+      settings = {
+        direction = "horizontal";
+        size = ''
+          function(term)
+            return vim.o.lines * 0.3
+          end
+        '';
+        open_mapping = "[[<c-t>]]";
+        hide_numbers = true;
+        shade_terminals = true;
+        start_in_insert = true;
+        terminal_mappings = true;
+        persist_mode = true;
+        insert_mappings = true;
+      };
+    };
+  };
 }

@@ -4,6 +4,8 @@
   imports = [
     ./core/window.nix
     ./core/theme.nix
+    ./core/file-tree.nix
+    ./core/git.nix
     ./languages/typescript.nix
   ];
 
@@ -50,42 +52,6 @@
   ];
 
   plugins = {
-    web-devicons.enable = true;
-    nvim-tree = {
-      enable = true;
-      settings = {
-        update_focused_file = {
-          enable = true;
-          update_root = true;
-        };
-      };
-    };
-    diffview.enable = true;
-
-    toggleterm = {
-      enable = true;
-      settings = {
-        direction = "horizontal";
-        size = ''
-          function(term)
-            return vim.o.lines * 0.3
-          end
-        '';
-        open_mapping = "[[<c-t>]]";
-        hide_numbers = true;
-        shade_terminals = true;
-        start_in_insert = true;
-        terminal_mappings = true;
-        persist_mode = true;
-        insert_mappings = true;
-      };
-    };
-
-    neogit = {
-      enable = true;
-      settings.integrations.diffview = true;
-    };
-
     telescope = {
       enable = true;
       settings.defaults = {
@@ -180,8 +146,8 @@
         };
       };
     };
+
     luasnip.enable = true;
-    gitsigns.enable = true;
     comment.enable = true;
     lualine.enable = true;
   };
