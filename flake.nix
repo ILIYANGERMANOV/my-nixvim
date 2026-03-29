@@ -47,7 +47,7 @@
           web = pkgs.mkShell {
             packages = webPackages ++ [ (mkNvim "web") ];
             shellHook = ''
-              echo "🌐 NixVim Web Environment Loaded"
+              echo "🌐 NixVim Web IDE Loaded"
               echo "Run 'nvim' to start."
             '';
           };
@@ -55,7 +55,7 @@
           haskell = pkgs.mkShell {
             packages = [ (mkNvim "haskell") ];
             shellHook = ''
-              echo "λ NixVim Haskell Environment Loaded"
+              echo "λ NixVim Haskell IDE Loaded"
               echo "Run 'nvim' to start."
             '';
           };
