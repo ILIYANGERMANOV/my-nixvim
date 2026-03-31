@@ -5,7 +5,7 @@
     {
       mode = "n";
       key = "<leader>tt";
-      action = ''<cmd>lua require("toggleterm").exec("npm test -- --watchAll=false", 1)<CR>'';
+      action = ''<cmd>lua require("toggleterm").exec("npm run test", 1)<CR>'';
       options.desc = "Run Tests (NPM)";
     }
     {
