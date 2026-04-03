@@ -22,6 +22,12 @@
     }
     {
       mode = "n";
+      key = "<leader>gi";
+      action = "<cmd>Telescope lsp_implementations<CR>";
+      options.desc = "Go to Implementation (Telescope)";
+    }
+    {
+      mode = "n";
       key = "<leader>ca";
       action = "<cmd>lua vim.lsp.buf.code_action()<CR>";
       options.desc = "Code Actions";
