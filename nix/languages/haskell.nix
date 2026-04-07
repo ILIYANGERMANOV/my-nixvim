@@ -51,7 +51,6 @@
   plugins = {
     treesitter.grammarPackages = with pkgs.vimPlugins.nvim-treesitter.builtGrammars; [
       haskell
-      cabal
     ];
 
     lsp = {
