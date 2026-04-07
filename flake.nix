@@ -19,9 +19,10 @@
     in
     {
       lib = {
-        /** Neovim (haskell profile) with HLS and tools pinned to `hpkgs` — use from project flakes (e.g. shellFor + same hpkgs as the dev shell). */
-        mkHaskellNvim =
-          pkgs: hpkgs:
+        /** * Neovim (haskell profile) with HLS and tools pinned to `hpkgs`.
+         * Usage: my-nixvim.lib.mkHaskellNvim { inherit pkgs hpkgs; }
+         */
+        mkHaskellNvim = { pkgs, hpkgs }:
           nixvim.legacyPackages.${pkgs.stdenv.hostPlatform.system}.makeNixvimWithModule {
             inherit pkgs;
             module = import "${self}/nix/ide.nix";
