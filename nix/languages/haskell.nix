@@ -16,12 +16,6 @@
     }
     {
       mode = "n";
-      key = "<leader>hg";
-      action = "<cmd>Telescope hoogle<CR>";
-      options.desc = "Hoogle (Live)";
-    }
-    {
-      mode = "n";
       key = "<leader>lx";
       action = "<cmd>lua _G.HlsRestart()<CR>";
       options.desc = "Restart Haskell LSP (HLS)";
@@ -29,8 +23,6 @@
   ];
 
   extraConfigLua = ''
-    require("telescope").load_extension("hoogle")
-
     _G.HlsRestart = function()
       vim.lsp.stop_client(vim.lsp.get_active_clients({ name = 'hls' }))
       vim.cmd('edit')
@@ -89,12 +81,7 @@
     };
   };
 
-  extraPlugins = [
-    pkgs.vimPlugins.telescope_hoogle
-  ];
-
   extraPackages = lib.optionals (hpkgs != null) [
-    pkgs.hoogle
     pkgs.cabal-install
     pkgs.cabal-fmt
     hpkgs.haskell-language-server
