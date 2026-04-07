@@ -81,11 +81,12 @@
     };
   };
 
-  extraPackages = lib.optionals (hpkgs != null) [
-    hpkgs.cabal-install
-    hpkgs.cabal-fmt
+  extraPackages = [
+    pkgs.cabal-install
+    pkgs.cabal-fmt
+    pkgs.fourmolu
+    pkgs.hlint
+  ] + lib.optionals (hpkgs != null) [
     hpkgs.haskell-language-server
-    hpkgs.fourmolu
-    hpkgs.hlint
   ];
 }
