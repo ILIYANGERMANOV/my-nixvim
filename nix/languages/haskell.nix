@@ -51,6 +51,7 @@
   plugins = {
     treesitter.grammarPackages = with pkgs.vimPlugins.nvim-treesitter.builtGrammars; [
       haskell
+      cabal
     ];
 
     lsp = {
@@ -83,7 +84,10 @@
       ];
     };
 
-    conform-nvim.settings.formatters_by_ft.haskell = [ "fourmolu" ];
+    conform-nvim.settings.formatters_by_ft = {
+      haskell = [ "fourmolu" ];
+      cabal = [ "cabal_fmt" ];
+    };
   };
 
   extraPlugins = [
@@ -91,10 +95,11 @@
   ];
 
   extraPackages = lib.optionals (hpkgs != null) [
+    pkgs.hoogle
+    pkgs.cabal-install
+    pkgs.cabal-fmt
+    hpkgs.haskell-language-server
     hpkgs.fourmolu
     hpkgs.hlint
-    hpkgs.hoogle
-    hpkgs.cabal-install
-    hpkgs.haskell-language-server
   ];
 }
