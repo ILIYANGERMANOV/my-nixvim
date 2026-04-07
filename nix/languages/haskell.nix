@@ -82,7 +82,7 @@
   };
 
   extraPackages = lib.optionals (hpkgs != null) [
-    pkgs.cabal-install
+    hpkgs.cabal-install
     hpkgs.cabal-fmt
     hpkgs.haskell-language-server
     hpkgs.fourmolu
