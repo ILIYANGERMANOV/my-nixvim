@@ -83,10 +83,10 @@
 
   extraPackages = [
     pkgs.cabal-install
-    pkgs.cabal-fmt
     pkgs.fourmolu
     pkgs.hlint
   ] ++ lib.optionals (hpkgs != null) [
+    hpkgs.cabal-fmt
     hpkgs.haskell-language-server
   ];
 }
