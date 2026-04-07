@@ -1,4 +1,4 @@
-{ pkgs, lib, hpkgs ? null }:
+{ pkgs, lib, hpkgs ? null, ... }:
 
 {
   keymaps = [
@@ -86,7 +86,7 @@
     pkgs.cabal-fmt
     pkgs.fourmolu
     pkgs.hlint
-  ] + lib.optionals (hpkgs != null) [
+  ] ++ lib.optionals (hpkgs != null) [
     hpkgs.haskell-language-server
   ];
 }

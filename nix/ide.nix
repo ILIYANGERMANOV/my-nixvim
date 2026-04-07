@@ -1,4 +1,4 @@
-{ pkgs, lib, profile, hpkgs ? null, ... }:
+{ pkgs, lib, profile, ... }:
 
 {
   imports = [
@@ -16,7 +16,7 @@
   ] ++ lib.optionals (profile == "web") [
     ./languages/typescript.nix
   ] ++ lib.optionals (profile == "haskell") [
-    (import ./languages/haskell.nix { inherit pkgs lib hpkgs; })
+    ./languages/haskell.nix
   ];
 
   env = {
