@@ -86,7 +86,7 @@
     pkgs.fourmolu
     pkgs.hlint
   ] ++ lib.optionals (hpkgs != null) [
-    hpkgs.cabal-fmt
+    hpkgs.hls-cabal-fmt-plugin
     hpkgs.haskell-language-server
   ];
 }
