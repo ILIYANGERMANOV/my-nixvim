@@ -7,9 +7,13 @@
       url = "github:nix-community/nixvim/nixos-25.11";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    disko = {
+      url = "github:nix-community/disko";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
-  outputs = { self, nixpkgs, nixvim, ... }:
+  outputs = { self, nixpkgs, nixvim, disko, ... }:
     let
       eachSystem =
         f:
@@ -73,5 +77,17 @@
 
           default = web;
         });
+
+      nixosConfigurations = {
+        lenovo-old = nixpkgs.lib.nixosSystem {
+          system = "x86_64-linux";
+          modules = [
+            disko.nixosModules.disko
+            ./hosts/lenovo-old/disk-config.nix
+            ./hosts/lenovo-old/configuration.nix
+          ];
+        };
+      };
     };
+
 }
