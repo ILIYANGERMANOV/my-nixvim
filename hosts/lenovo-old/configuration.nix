@@ -27,7 +27,7 @@
     defaultEditor = true;
 
     imports = [
-      ({ pkgs, lib, config, ... }@args: import ../../nix/nvim/ide.nix (args // { profile = "web"; }))
+      ({ pkgs, lib, config, ... }@args: import ../../programs/nvim/ide.nix (args // { profile = "web"; }))
     ];
   };
   # --- Bootloader ---

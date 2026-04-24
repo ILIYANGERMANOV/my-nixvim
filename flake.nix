@@ -33,7 +33,7 @@
         mkHaskellNvim = { pkgs, hpkgs }:
           nixvim.legacyPackages.${pkgs.stdenv.hostPlatform.system}.makeNixvimWithModule {
             inherit pkgs;
-            module = import "${self}/nix/nvim/ide.nix";
+            module = import "${self}/programs/nvim/ide.nix";
             extraSpecialArgs = {
               profile = "haskell";
               inherit hpkgs;
@@ -49,7 +49,7 @@
             profile:
             nixvim.legacyPackages.${system}.makeNixvimWithModule {
               inherit pkgs;
-              module = import ./nix/nvim/ide.nix;
+              module = import ./programs/nvim/ide.nix;
               extraSpecialArgs = {
                 inherit profile;
               };
