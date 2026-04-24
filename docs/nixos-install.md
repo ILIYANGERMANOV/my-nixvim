@@ -163,17 +163,8 @@ You will also need the public key in step 2.10 to authorise this machine in `.so
 Retrieve the `keys.txt` content from BitWarden and write it to disk. Do **not** use a file — write directly so the key never touches `/tmp` or shell history:
 
 ```bash
-sudo tee /mnt/var/lib/sops-age/keys.txt << 'EOF'
-# created: ...
-# public key: age1...
-AGE-SECRET-KEY-1...
-EOF
-sudo chmod 600 /mnt/var/lib/sops-age/keys.txt
-```
-
-Paste the exact contents from BitWarden between the `EOF` markers. Verify it looks right:
-
-```bash
+sudo mkdir -p /mnt/var/lib/sops-age/
+sudo nano /mnt/var/lib/sops-age/keys.txt
 sudo grep 'public key' /mnt/var/lib/sops-age/keys.txt
 ```
 
@@ -186,7 +177,8 @@ No changes to `.sops.yaml` are needed — the key is the same one already author
 lanzaboote needs the PKI bundle to exist before `nixos-install` can sign the boot files. Create the keys now while `/mnt` is still mounted:
 
 ```bash
-sudo nix-shell -p sbctl --run "sbctl create-keys --export /mnt/etc/secureboot"
+sudo mkdir -p /mt/etc/secureboot/
+sudo nix-shell -p sbctl --run "sbctl --disable-landlock create-keys --export /mnt/etc/secureboot"
 ```
 
 ### 2.7 Install NixOS
