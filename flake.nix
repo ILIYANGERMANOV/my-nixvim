@@ -19,6 +19,10 @@
       url = "github:nix-community/home-manager/release-25.11";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    lanzaboote = {
+      url = "github:nix-community/lanzaboote/v1.0.0";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs = { self, ... }@inputs:
@@ -31,6 +35,7 @@
       devShells = lib.forAllSystems (pkgs: {
         web = import ./shells/web.nix { inherit pkgs inputs self; };
         haskell = import ./shells/haskell.nix { inherit pkgs inputs self; };
+        sops = import ./shells/sops.nix { inherit pkgs inputs self; };
         default = import ./shells/web.nix { inherit pkgs inputs self; };
       });
 

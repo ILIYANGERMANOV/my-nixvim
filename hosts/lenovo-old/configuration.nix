@@ -1,14 +1,19 @@
-{ config, pkgs, modulesPath, root, ... }: {
+{ config, pkgs, lib, modulesPath, root, ... }: {
   imports = [
     (modulesPath + "/installer/scan/not-detected.nix")
     ./disk-config.nix
   ];
 
-  boot.loader.systemd-boot.enable = true;
+  # lanzaboote replaces systemd-boot to provide Secure Boot signing
+  boot.loader.systemd-boot.enable = lib.mkForce false;
   boot.loader.efi.canTouchEfiVariables = true;
+  boot.lanzaboote = {
+    enable = true;
+    pkiBundle = "/etc/secureboot";
+  };
   boot.initrd.availableKernelModules = [ "xhci_pci" "ahci" "nvme" "usb_storage" "sd_mod" ];
-  boot.initrd.kernelModules = [ ];
-  boot.kernelModules = [ ];
+  boot.initrd.kernelModules = [ "aesni_intel" "cryptd" ];
+  boot.kernelModules = [ "kvm-intel" ];
 
   networking.hostName = "lenovo-old";
   networking.networkmanager.enable = true;
