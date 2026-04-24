@@ -177,8 +177,9 @@ No changes to `.sops.yaml` are needed — the key is the same one already author
 lanzaboote needs the PKI bundle to exist before `nixos-install` can sign the boot files. Create the keys now while `/mnt` is still mounted:
 
 ```bash
-sudo mkdir -p /mt/etc/secureboot/
-sudo nix-shell -p sbctl --run "sbctl --disable-landlock create-keys --export /mnt/etc/secureboot"
+sudo nix-shell -p sbctl --run "sbctl create-keys"
+sudo mkdir -p /mnt/etc/secureboot
+sudo cp -a /var/lib/sbctl/keys /mnt/etc/secureboot/
 ```
 
 ### 2.7 Install NixOS
