@@ -88,6 +88,7 @@
           modules = [
             disko.nixosModules.disko
             sops-nix.nixosModules.sops
+            nixvim.nixosModules.default
             ./hosts/lenovo-old/disk-config.nix
             ./hosts/lenovo-old/configuration.nix
           ];

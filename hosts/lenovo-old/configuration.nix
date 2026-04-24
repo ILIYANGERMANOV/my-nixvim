@@ -5,6 +5,31 @@
     (modulesPath + "/installer/scan/not-detected.nix")
   ];
 
+  # --- System-wide Git Configuration ---
+  programs.git = {
+    enable = true;
+    config = {
+      user = {
+        name = "Iliyan Germanov";
+        email = "iliyan.germanov971@gmail.com";
+      };
+      init = {
+        defaultBranch = "main";
+      };
+    };
+  };
+
+  # --- NixVim Integration ---
+  programs.nixvim = {
+    enable = true;
+
+    # Makes your custom NixVim the default editor for git commits, sudo, etc.
+    defaultEditor = true;
+
+    imports = [
+      ({ pkgs, lib, config, ... }@args: import ../../nix/nvim/ide.nix (args // { profile = "web"; }))
+    ];
+  };
   # --- Bootloader ---
   # Matches your Disko UEFI configuration
   boot.loader.systemd-boot.enable = true;
@@ -64,8 +89,6 @@
   nixpkgs.config.allowUnfree = true;
 
   environment.systemPackages = with pkgs; [
-    git
-    neovim
     firefox
 
     # Handy utilities
