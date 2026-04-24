@@ -7,8 +7,8 @@
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
   boot.initrd.availableKernelModules = [ "xhci_pci" "ahci" "nvme" "usb_storage" "sd_mod" ];
-  boot.initrd.kernelModules = [ ];
-  boot.kernelModules = [ ];
+  boot.initrd.kernelModules = [ "aesni_intel" "cryptd" ];
+  boot.kernelModules = [ "kvm-intel" ];
 
   networking.hostName = "lenovo-old";
   networking.networkmanager.enable = true;
