@@ -1,5 +1,5 @@
 {
-  description = "Pre-configured NixVim IDE";
+  description = "NixOS & dev-shell configuration";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.11";
@@ -15,86 +15,28 @@
       url = "github:Mic92/sops-nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    home-manager = {
+      url = "github:nix-community/home-manager/release-25.11";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
-  outputs = { self, nixpkgs, nixvim, disko, sops-nix, ... }:
+  outputs = { self, ... }@inputs:
     let
-      eachSystem =
-        f:
-        nixpkgs.lib.genAttrs nixpkgs.lib.systems.flakeExposed (
-          system: f nixpkgs.legacyPackages.${system}
-        );
+      lib = import ./lib { inherit inputs; root = self; };
     in
     {
-      lib = {
-        /** * Neovim (haskell profile) with HLS and tools pinned to `hpkgs`.
-         * Usage: my-nixvim.lib.mkHaskellNvim { inherit pkgs hpkgs; }
-         */
-        mkHaskellNvim = { pkgs, hpkgs }:
-          nixvim.legacyPackages.${pkgs.stdenv.hostPlatform.system}.makeNixvimWithModule {
-            inherit pkgs;
-            module = import "${self}/programs/nvim/ide.nix";
-            extraSpecialArgs = {
-              profile = "haskell";
-              inherit hpkgs;
-            };
-          };
-      };
+      lib = { inherit (lib) mkHaskellNvim; };
 
-      devShells = eachSystem (pkgs:
-        let
-          system = pkgs.stdenv.hostPlatform.system;
-
-          mkNvim =
-            profile:
-            nixvim.legacyPackages.${system}.makeNixvimWithModule {
-              inherit pkgs;
-              module = import ./programs/nvim/ide.nix;
-              extraSpecialArgs = {
-                inherit profile;
-              };
-            };
-
-          basePackages = with pkgs; [
-            git
-            git-lfs
-            nil
-            nixpkgs-fmt
-          ];
-
-          webPackages = basePackages ++ (with pkgs; [
-            nodejs_24
-            corepack
-            nodePackages.typescript
-            nodePackages.typescript-language-server
-            docker-client
-          ]);
-        in
-        rec {
-          web = pkgs.mkShell {
-            packages = webPackages ++ [ (mkNvim "web") ];
-            shellHook = ''
-              echo "🌐 NixVim Web IDE Loaded"
-              echo "Run 'nvim' to start."
-            '';
-          };
-
-          default = web;
-        });
+      devShells = lib.forAllSystems (pkgs: {
+        web = import ./shells/web.nix { inherit pkgs inputs self; };
+        haskell = import ./shells/haskell.nix { inherit pkgs inputs self; };
+        default = import ./shells/web.nix { inherit pkgs inputs self; };
+      });
 
       nixosConfigurations = {
-        lenovo-old = nixpkgs.lib.nixosSystem {
-          system = "x86_64-linux";
-          specialArgs = { inherit self; };
-          modules = [
-            disko.nixosModules.disko
-            sops-nix.nixosModules.sops
-            nixvim.nixosModules.default
-            ./hosts/lenovo-old/disk-config.nix
-            ./hosts/lenovo-old/configuration.nix
-          ];
-        };
+        lenovo-old = lib.mkNixosSystem "lenovo-old" "x86_64-linux";
+        # next-host = lib.mkNixosSystem "next-host" "x86_64-linux";
       };
     };
-
 }
