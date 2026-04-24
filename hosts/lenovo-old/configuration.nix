@@ -1,4 +1,4 @@
-{ config, pkgs, modulesPath, ... }:
+{ config, pkgs, modulesPath, self, ... }:
 
 {
   imports = [
@@ -22,12 +22,9 @@
   # --- NixVim Integration ---
   programs.nixvim = {
     enable = true;
-
-    # Makes your custom NixVim the default editor for git commits, sudo, etc.
     defaultEditor = true;
-
     imports = [
-      ({ pkgs, lib, config, ... }@args: import ../../programs/nvim/ide.nix (args // { profile = "web"; }))
+      (args@{ pkgs, config, ... }: import "${self}/programs/nvim/ide.nix" (args // { profile = "web"; }))
     ];
   };
   # --- Bootloader ---

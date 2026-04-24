@@ -85,6 +85,7 @@
       nixosConfigurations = {
         lenovo-old = nixpkgs.lib.nixosSystem {
           system = "x86_64-linux";
+          specialArgs = { inherit self; };
           modules = [
             disko.nixosModules.disko
             sops-nix.nixosModules.sops
