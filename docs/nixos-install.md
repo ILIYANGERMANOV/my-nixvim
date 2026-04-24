@@ -54,14 +54,18 @@ nixosConfigurations = {
 ### 1.4 Write `configuration.nix`
 
 ```nix
-{ config, pkgs, modulesPath, root, ... }: {
+{ config, pkgs, lib, modulesPath, root, ... }: {
   imports = [
     (modulesPath + "/installer/scan/not-detected.nix")
     ./disk-config.nix
   ];
 
-  boot.loader.systemd-boot.enable = true;
+  boot.loader.systemd-boot.enable = lib.mkForce false;
   boot.loader.efi.canTouchEfiVariables = true;
+  boot.lanzaboote = {
+    enable = true;
+    pkiBundle = "/etc/secureboot";
+  };
   boot.initrd.availableKernelModules = [ "xhci_pci" "ahci" "nvme" "usb_storage" "sd_mod" ];
   boot.initrd.kernelModules = [ "aesni_intel" "cryptd" ];
 
@@ -150,7 +154,7 @@ sudo grep 'public key' /mnt/var/lib/sops-age/keys.txt
 
 **Save the entire `/mnt/var/lib/sops-age/keys.txt` file to BitWarden now** (secure note), before you do anything else. If the disk is ever wiped you will have no other copy.
 
-You will also need the public key in step 2.8 to authorise this machine in `.sops.yaml`.
+You will also need the public key in step 2.10 to authorise this machine in `.sops.yaml`.
 
 ---
 
@@ -177,15 +181,23 @@ No changes to `.sops.yaml` are needed — the key is the same one already author
 
 ---
 
-### 2.6 Install NixOS
+### 2.6 Create Secure Boot keys
+
+lanzaboote needs the PKI bundle to exist before `nixos-install` can sign the boot files. Create the keys now while `/mnt` is still mounted:
+
+```bash
+sudo nix-shell -p sbctl --run "sbctl create-keys --export /mnt/etc/secureboot"
+```
+
+### 2.7 Install NixOS
 
 ```bash
 sudo nixos-install --flake /tmp/nixos-config#<hostname> --no-root-passwd
 ```
 
-This builds the system closure, copies it into `/mnt/nix/store`, and writes the bootloader.
+This builds the system closure, copies it into `/mnt/nix/store`, and writes the lanzaboote-signed bootloader.
 
-### 2.7 Reboot
+### 2.8 Reboot
 
 ```bash
 sudo reboot
@@ -193,7 +205,19 @@ sudo reboot
 
 Remove the USB drive. The machine will boot into NixOS and prompt for the LUKS passphrase.
 
-### 2.8 Authorise the new age key in SOPS
+### 2.9 Enroll Secure Boot keys
+
+After logging in, enroll the keys into the UEFI firmware:
+
+```bash
+sudo sbctl enroll-keys --microsoft
+```
+
+The `--microsoft` flag includes Microsoft's certificates, which are required by most firmware to boot option ROMs and external devices.
+
+Then reboot, enter the UEFI firmware settings (usually F2/DEL/F12 during POST), and **enable Secure Boot**. From this point on the firmware will reject any unsigned or tampered bootloader, kernel, or initrd.
+
+### 2.10 Authorise the new age key in SOPS
 
 After the machine is up, follow **`docs/SOPS.md` → "Adding a new machine (new age key)"** to add the public key to `.sops.yaml`, re-encrypt secrets, commit, and push.
 

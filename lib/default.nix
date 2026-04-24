@@ -10,6 +10,7 @@ let
         inputs.disko.nixosModules.disko
         inputs.sops-nix.nixosModules.sops
         inputs.home-manager.nixosModules.home-manager
+        inputs.lanzaboote.nixosModules.lanzaboote
         "${root}/modules/nixos/common.nix"
         "${root}/modules/nixos/desktop.nix"
         "${root}/modules/nixos/audio.nix"
