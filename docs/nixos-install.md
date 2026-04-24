@@ -164,7 +164,9 @@ Retrieve the `keys.txt` content from BitWarden and write it to disk. Do **not** 
 
 ```bash
 sudo mkdir -p /mnt/var/lib/sops-age/
+sudo chmod 700 /mnt/var/lib/sops-age/
 sudo nano /mnt/var/lib/sops-age/keys.txt
+sudo chmod 600 /mnt/var/lib/sops-age/keys.txt
 sudo grep 'public key' /mnt/var/lib/sops-age/keys.txt
 ```
 
@@ -174,12 +176,25 @@ No changes to `.sops.yaml` are needed — the key is the same one already author
 
 ### 2.6 Create Secure Boot keys
 
-lanzaboote needs the PKI bundle to exist before `nixos-install` can sign the boot files. Create the keys now while `/mnt` is still mounted:
+lanzaboote needs the PKI bundle to exist before `nixos-install` can sign the boot files. Create the keys now while `/mnt` is still mounted.
+
+> [!WARNING]
+> The folder structure matters — lanzaboote expects keys inside a `keys/` subdirectory and also needs the `GUID` file in the parent. Getting this wrong causes a "Failed to read public key" error during install.
 
 ```bash
+# 1. Generate keys in the default location
 sudo nix-shell -p sbctl --run "sbctl create-keys"
-sudo mkdir -p /mnt/etc/secureboot
-sudo cp -a /var/lib/sbctl/keys /mnt/etc/secureboot/
+
+# 2. Set up the exact folder structure lanzaboote expects on the target drive
+sudo mkdir -p /mnt/etc/secureboot/keys
+sudo chmod 700 /mnt/etc/secureboot
+sudo cp -a /var/lib/sbctl/keys/* /mnt/etc/secureboot/keys/
+sudo cp /var/lib/sbctl/GUID /mnt/etc/secureboot/
+
+# 3. Mirror the keys to the live USB so nixos-install can sign the bootloader
+#    (nixos-install runs in the live USB context and looks for keys at /etc/secureboot, not /mnt)
+sudo mkdir -p /etc/secureboot
+sudo cp -a /mnt/etc/secureboot/* /etc/secureboot/
 ```
 
 ### 2.7 Install NixOS
@@ -200,15 +215,23 @@ Remove the USB drive. The machine will boot into NixOS and prompt for the LUKS p
 
 ### 2.9 Enroll Secure Boot keys
 
+> [!IMPORTANT]
+> **Prerequisite — put the firmware into Setup Mode first.**
+> Boot into your UEFI/BIOS settings and find the Secure Boot section. Clear the factory OEM keys — the option is usually labelled "Clear Secure Boot Keys", "Delete All Variables", or "Restore Factory Keys → Clear". This puts the firmware into **Setup Mode**, which is required before you can enroll your own keys. Without this step `sbctl enroll-keys` will fail with a "system is not in Setup Mode" error.
+
 After logging in, enroll the keys into the UEFI firmware:
 
 ```bash
+# Suppress the old-location migration warning (lanzaboote keeps keys in /etc/secureboot, not sbctl's default)
+sudo sbctl setup --migrate
+
+# Enroll your custom keys alongside Microsoft's hardware certificates
 sudo sbctl enroll-keys --microsoft
 ```
 
 The `--microsoft` flag includes Microsoft's certificates, which are required by most firmware to boot option ROMs and external devices.
 
-Then reboot, enter the UEFI firmware settings (usually F2/DEL/F12 during POST), and **enable Secure Boot**. From this point on the firmware will reject any unsigned or tampered bootloader, kernel, or initrd.
+Then reboot and **enable Secure Boot** in the UEFI firmware settings (usually F2/DEL/F12 during POST). From this point on the firmware will reject any unsigned or tampered bootloader, kernel, or initrd.
 
 ### 2.10 Authorise the new age key in SOPS
 
