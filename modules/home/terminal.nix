@@ -10,7 +10,7 @@
     enableZshIntegration = true;
 
     settings = {
-      theme = "catppuccin-mocha";
+      theme = "tokyonight";
       font-family = "JetBrainsMono Nerd Font";
       font-size = 13;
 
