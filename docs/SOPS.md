@@ -8,7 +8,7 @@ This project uses [SOPS](https://github.com/getsops/sops) with [age](https://age
 |------|---------|
 | `.sops.yaml` | Declares which age keys can decrypt which secret files |
 | `secrets/secrets.yaml` | Encrypted secrets (safe to commit) |
-| `modules/nixos/sops.nix` | Tells sops-nix where the age key lives on the deployed machine |
+| `modules/nixos/security/sops.nix` | Tells sops-nix where the age key lives on the deployed machine |
 
 The age key on the deployed machine lives at `/var/lib/sops-age/keys.txt`. This file must exist before `nixos-rebuild` can activate any configuration that references a SOPS secret.
 
@@ -201,7 +201,7 @@ If the private key is compromised, follow all four steps — skipping any one of
 
 ## How sops-nix finds the key at boot
 
-`modules/nixos/sops.nix` configures:
+`modules/nixos/security/sops.nix` configures:
 
 ```nix
 sops.age.keyFile = "/var/lib/sops-age/keys.txt";
