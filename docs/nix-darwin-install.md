@@ -14,7 +14,7 @@ macOS (Apple Silicon or Intel)
 ├── nix-darwin system activation  →  /run/current-system
 ├── home-manager user environment →  ~/.nix-profile
 │   ├── NeoVim (nixvim, web profile)
-│   ├── Ghostty terminal
+│   ├── Ghostty terminal (via homebrew cask)
 │   ├── Zsh + Starship + eza/zoxide/fzf/ripgrep
 │   └── JetBrainsMono Nerd Font
 └── darwin-rebuild CLI            →  rebuild the system after config changes
@@ -34,7 +34,7 @@ curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix 
 
 **Why this installer?** The official Nix installer leaves behind a multi-step mess to uninstall. The Determinate Systems installer (`nix-installer`) is fully reversible (`nix-installer uninstall`), sets up multi-user mode automatically, and enables flakes out of the box — no manual `nix.conf` editing needed.
 
-After installation, open a **new terminal** (or `source /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh`) so the `nix` command is on your PATH.
+After installation, open a **new terminal** so the `nix` command is on your PATH.
 
 Verify:
 
@@ -55,9 +55,17 @@ uname -m
 - `arm64` → Apple Silicon → config uses `aarch64-darwin` ✓ (already set in `flake.nix`)
 - `x86_64` → Intel Mac → change `flake.nix` `darwinConfigurations` entry to `"x86_64-darwin"`
 
-### 2.2 Set the hostname
+### 2.2 Verify your username
 
-The hostname on the machine must match `networking.hostName = "macos-main"` in the config. nix-darwin reads the hostname to find the right `darwinConfigurations` entry when you omit `--flake`.
+The username in `hosts/macos-main/configuration.nix` must match your actual macOS login name:
+
+```bash
+id -un   # prints your login name
+```
+
+Open `hosts/macos-main/configuration.nix` and confirm `myConfig.user.name` matches the output exactly. If it doesn't, update it now — nix-darwin will fail activation with `primary user does not exist` otherwise.
+
+### 2.3 Set the hostname
 
 ```bash
 sudo scutil --set LocalHostName macos-main
@@ -65,29 +73,27 @@ sudo scutil --set ComputerName macos-main
 sudo scutil --set HostName macos-main
 ```
 
-**Why three commands?** macOS has three separate hostname values: `LocalHostName` (Bonjour/mDNS), `ComputerName` (Finder/Sharing), and `HostName` (BSD kernel). nix-darwin's `networking.hostName` sets all three during activation, but you need them correct *before* the first build so the initial `darwin-rebuild` can match the config.
-
 Verify:
 
 ```bash
 scutil --get LocalHostName   # should print: macos-main
 ```
 
-### 2.3 Back up existing `/etc` shell files
+**Why three commands?** macOS has three separate hostname values: `LocalHostName` (Bonjour/mDNS), `ComputerName` (Finder/Sharing), and `HostName` (BSD kernel). nix-darwin's `networking.hostName` sets all three during activation, but you need them correct *before* the first build.
 
-nix-darwin will replace `/etc/zshrc` and `/etc/bashrc` with its own versions. It attempts to back them up automatically, but this can fail with a "refusing to clobber" error if the backup file already exists. Pre-empt it manually:
+### 2.4 Back up existing `/etc` shell files
+
+nix-darwin replaces `/etc/zshrc` and `/etc/bashrc` with its own versions. Pre-empt the conflict manually:
 
 ```bash
 sudo mv /etc/zshrc /etc/zshrc.before-nix-darwin
 sudo mv /etc/bashrc /etc/bashrc.before-nix-darwin
 ```
 
-**Why now and not later?** If you skip this and the auto-backup fails mid-bootstrap, you'll need to abort, move the files, and re-run the entire bootstrap. Doing it now costs nothing.
-
 > [!NOTE]
-> Between this step and completing the bootstrap, any new terminal you open may be missing some default macOS PATH entries (the original `/etc/zshrc` is gone). Keep your current terminal open and don't open new ones until after step 3.2.
+> Any new terminal you open after this step will be missing default macOS PATH entries until the bootstrap completes. Stay in your current terminal until after step 3.2.
 
-### 2.4 Clone the repo
+### 2.5 Clone the repo
 
 ```bash
 git clone <repo-url> ~/ivy-apps/repo/nixos
@@ -98,54 +104,28 @@ cd ~/ivy-apps/repo/nixos
 
 ## Part 3 — Bootstrap nix-darwin (first time only)
 
-`darwin-rebuild` doesn't exist yet — it's installed *by* nix-darwin. The bootstrap command runs it once directly from the flake without installing anything permanently first.
-
-### 3.1 Build the system closure
+### 3.1 Run the bootstrap
 
 ```bash
-sudo nix run --extra-experimental-features 'nix-command flakes' 'github:nix-darwin/nix-darwin/nix-darwin-25.11#darwin-rebuild' -- switch --flake .#macos-main
+sudo nix run --extra-experimental-features 'nix-command flakes' \
+  'github:nix-darwin/nix-darwin/nix-darwin-25.11#darwin-rebuild' \
+  -- switch --flake .#macos-main
 ```
 
-**Why pin the branch?** The `flake.nix` in this repo pins nix-darwin to the `nix-darwin-25.11` branch to match `nixpkgs/nixos-25.11`. Using the unversioned `github:nix-darwin/nix-darwin` will fetch whatever the default branch currently is, which may be a newer release — nix-darwin enforces a hard version match with nixpkgs and will abort with a mismatch error if they differ.
+**Why `sudo`?** Recent nix-darwin requires activation to run as root — it writes to `/etc`, `/run/current-system`, and registers launchd services.
 
-**Why this instead of `darwin-rebuild switch`?** `darwin-rebuild` is provided by nix-darwin itself. On a fresh machine it doesn't exist yet. `nix run` builds and runs it from the flake input in a temporary environment without permanently installing it.
+**Why `--extra-experimental-features`?** `sudo` drops your user environment. Passing the flag inline enables flakes without relying on your user's `nix.conf`.
 
-**What happens:** This command builds the full system closure (nix-darwin activation scripts, home-manager, all packages), then attempts to activate. The build phase runs as your user. The activation phase requires root and will fail with:
-
-```
-system activation must now be run as root
-```
-
-This is expected — note the store path printed in the error (e.g. `/nix/store/…-darwin-rebuild/bin/darwin-rebuild`). You need it for the next step.
+**Why pin the branch?** The `flake.nix` pins nix-darwin to `nix-darwin-25.11` to match `nixpkgs/nixos-25.11`. Using the unversioned `github:nix-darwin/nix-darwin` fetches the current default branch, which may be a newer release — nix-darwin enforces a hard version match and aborts if they differ.
 
 > [!NOTE]
-> The build downloads a large amount of packages on first run. Expect 5–20 minutes depending on your connection.
+> The build downloads a large number of packages on first run. Expect 5–20 minutes depending on your connection.
 
-### 3.2 Activate as root
+### 3.2 Open a new terminal
 
-Take the store path from the error in step 3.1 and run activation as root:
+**Do not** `source /etc/zshrc`. Profile scripts guard against double-sourcing with env variables, so PATH additions are silently skipped in the existing session. Open a new terminal window for a clean environment.
 
-```bash
-sudo /nix/store/<hash>-darwin-rebuild/bin/darwin-rebuild switch --flake .#macos-main
-```
-
-**Why two steps?** Recent nix-darwin requires the activation script to run as root because it writes to `/etc`, `/run/current-system`, and registers launchd services. Running the full `nix run` command under `sudo` fails because `sudo` drops your user environment including the `nix` binary from `PATH`. The split — build as user, activate as root via the already-built store path — is the reliable workaround.
-
-**What activation does:**
-1. Patches `/etc/zshrc`, `/etc/bashrc`, and `/etc/shells` to source Nix and nix-darwin profile scripts.
-2. Creates symlinks under `/run/current-system`.
-3. Activates home-manager for your user.
-4. Registers any launchd services declared in the config.
-
-### 3.3 Reload your shell
-
-```bash
-source /etc/zshrc
-```
-
-**Why?** The bootstrap modifies `/etc/zshrc` to source the Nix and nix-darwin profile scripts. Your current shell session predates those changes, so you need to reload it (or just open a new terminal tab).
-
-Verify `darwin-rebuild` is now available:
+Verify:
 
 ```bash
 which darwin-rebuild   # should print a path under /run/current-system
@@ -166,19 +146,9 @@ Neovim should launch with the Catppuccin theme, nvim-tree, Telescope, LSP, and a
 
 ### 4.2 Check Ghostty
 
-Ghostty is installed as a macOS app via home-manager. Find it in:
+Ghostty is installed as a native macOS app via homebrew (managed declaratively by nix-darwin). Find it in `/Applications/Ghostty.app` or launch from Spotlight (`⌘ Space → Ghostty`).
 
-```
-~/.nix-profile/Applications/Ghostty.app
-```
-
-Or open it with:
-
-```bash
-open ~/.nix-profile/Applications/Ghostty.app
-```
-
-**Why is it not in `/Applications`?** home-manager installs GUI apps into `~/.nix-profile/Applications/`. Spotlight indexes this path, so you can launch Ghostty from Spotlight (`⌘ Space → Ghostty`). If Spotlight doesn't find it yet, run `mdimport ~/.nix-profile/Applications/`.
+The config (`~/.config/ghostty/config`) is managed by home-manager — theme, font, and keybinds are all declared in `modules/home/terminal.nix`.
 
 ### 4.3 Check the font
 
@@ -199,8 +169,6 @@ cd ~/ivy-apps/repo/nixos
 darwin-rebuild switch --flake .#macos-main
 ```
 
-**Why `switch` and not `build`?** `build` only builds the new closure without activating it — useful to test that the config evaluates cleanly. `switch` builds *and* activates immediately. Use `build` first if you want a dry-run, then `switch` to apply.
-
 ### Dry-run (check the config compiles without applying)
 
 ```bash
@@ -213,7 +181,7 @@ darwin-rebuild build --flake .#macos-main
 darwin-rebuild rollback
 ```
 
-**Why this is safe:** nix-darwin keeps every previous system generation. `rollback` switches the symlink back to the prior generation's activation script — your packages and configuration are instantly reverted without rebuilding anything.
+nix-darwin keeps every previous system generation — rollback is instant with no rebuilding.
 
 ### List all generations
 
@@ -225,18 +193,37 @@ darwin-rebuild --list-generations
 
 ## Troubleshooting
 
+### `primary user does not exist`
+
+```
+error: primary user `<name>` does not exist, aborting activation
+```
+
+The username in `hosts/macos-main/configuration.nix` doesn't match your actual macOS login name. Check your login name and update the config:
+
+```bash
+id -un   # your actual login name
+```
+
+Edit `hosts/macos-main/configuration.nix`:
+
+```nix
+myConfig.user.name = "<output of id -un>";
+```
+
+Then re-run the bootstrap.
+
 ### nix-darwin / nixpkgs version mismatch
 
 ```
-error: nix-darwin now uses release branches that correspond to Nixpkgs releases.
-       You are currently using nix-darwin 26.05 with Nixpkgs 25.11.
+error: You are currently using nix-darwin 26.05 with Nixpkgs 25.11.
 ```
 
-This happens when `github:nix-darwin/nix-darwin` (unversioned) is used in `flake.nix` and the default branch has advanced to a newer release. Fix it by ensuring the branch in `flake.nix` matches the nixpkgs branch:
+The `nix-darwin` input in `flake.nix` is missing a branch pin and picked up a newer release. Ensure the branch matches the nixpkgs branch:
 
 ```nix
 nix-darwin = {
-  url = "github:nix-darwin/nix-darwin/nix-darwin-25.11";   # must match nixpkgs branch
+  url = "github:nix-darwin/nix-darwin/nix-darwin-25.11";
   inputs.nixpkgs.follows = "nixpkgs";
 };
 ```
@@ -245,18 +232,7 @@ Then update the lock entry and retry:
 
 ```bash
 nix flake update nix-darwin
-nix run 'github:nix-darwin/nix-darwin/nix-darwin-25.11#darwin-rebuild' -- switch --flake .#macos-main
 ```
-
-### `system activation must now be run as root`
-
-This is expected behaviour in recent nix-darwin — activation writes to `/etc` and `/run/current-system` and requires root. The build phase (the slow part) already completed successfully. Grab the store path from the error output and run activation directly:
-
-```bash
-sudo /nix/store/<hash>-darwin-rebuild/bin/darwin-rebuild switch --flake .#macos-main
-```
-
-**Why not `sudo nix run ...`?** `sudo` drops your user environment, removing `nix` from `PATH`. The store path bypasses this entirely.
 
 ### `/etc/zshrc` conflict error
 
@@ -264,7 +240,7 @@ sudo /nix/store/<hash>-darwin-rebuild/bin/darwin-rebuild switch --flake .#macos-
 error: refusing to clobber existing file '/etc/zshrc'
 ```
 
-You skipped step 2.3. Move the files manually and re-run activation:
+You skipped step 2.4. Move the files manually and re-run:
 
 ```bash
 sudo mv /etc/zshrc /etc/zshrc.before-nix-darwin
@@ -274,21 +250,13 @@ sudo mv /etc/zshenv /etc/zshenv.before-nix-darwin
 
 ### `darwin-rebuild: command not found` after bootstrap
 
-The bootstrap activated nix-darwin but your current shell doesn't see it yet. Reload:
-
-```bash
-source /etc/zshrc
-```
-
-Or open a new terminal.
+`source /etc/zshrc` does not work in an existing shell — open a new terminal instead.
 
 ### Nix daemon not running
 
 ```
 error: cannot connect to daemon at '/nix/var/nix/daemon-socket/socket'
 ```
-
-The Nix daemon launchd service didn't start. Start it manually:
 
 ```bash
 sudo launchctl load /Library/LaunchDaemons/org.nixos.nix-daemon.plist
