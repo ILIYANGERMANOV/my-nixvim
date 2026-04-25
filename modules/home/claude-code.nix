@@ -6,8 +6,8 @@ let
     name = "claude-statusline-dir";
     runtimeInputs = with pkgs; [ git ];
     text = ''
-      CYAN='\033[38;5;31m'
-      GREEN='\033[38;5;28m'
+      CYAN='\033[38;5;116m'
+      GREEN='\033[38;5;114m'
       RESET='\033[0m'
 
       cwd="''${1:-}"
@@ -36,7 +36,7 @@ let
     name = "claude-statusline-model";
     runtimeInputs = [ ];
     text = ''
-      BLUE='\033[38;5;25m'
+      BLUE='\033[38;5;111m'
       RESET='\033[0m'
 
       model="''${1:-}"
@@ -51,9 +51,9 @@ let
     name = "claude-statusline-usage";
     runtimeInputs = with pkgs; [ coreutils ];
     text = ''
-      GREY='\033[38;5;240m'
-      YELLOW='\033[38;5;166m'
-      RED='\033[38;5;124m'
+      GREY='\033[38;5;245m'
+      YELLOW='\033[38;5;215m'
+      RED='\033[38;5;210m'
       RESET='\033[0m'
 
       used_pct="''${1:-}"
@@ -119,11 +119,11 @@ let
       ctx_k=$(( ctx_size / 1000 ))
 
       if [[ "$pct" -ge 80 ]]; then
-        printf '%b' "  \033[1;97;41m ⚠ ''${toks_k}k / ''${ctx_k}k (''${pct}%) ''${RESET}"
+        printf '%b' "  \033[1;38;5;210m⚠ ''${toks_k}k / ''${ctx_k}k (''${pct}%)''${RESET}"
       elif [[ "$pct" -ge 50 ]]; then
-        printf '%b' "  \033[1;30;43m ~ ''${toks_k}k / ''${ctx_k}k (''${pct}%) ''${RESET}"
+        printf '%b' "  \033[1;38;5;215m~ ''${toks_k}k / ''${ctx_k}k (''${pct}%)''${RESET}"
       else
-        printf '%b' "  \033[1;30;42m ''${toks_k}k / ''${ctx_k}k (''${pct}%) ''${RESET}"
+        printf '%b' "  \033[38;5;114m''${toks_k}k / ''${ctx_k}k (''${pct}%)''${RESET}"
       fi
     '';
   };
