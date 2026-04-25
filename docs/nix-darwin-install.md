@@ -73,7 +73,21 @@ Verify:
 scutil --get LocalHostName   # should print: macos-main
 ```
 
-### 2.3 Clone the repo
+### 2.3 Back up existing `/etc` shell files
+
+nix-darwin will replace `/etc/zshrc` and `/etc/bashrc` with its own versions. It attempts to back them up automatically, but this can fail with a "refusing to clobber" error if the backup file already exists. Pre-empt it manually:
+
+```bash
+sudo mv /etc/zshrc /etc/zshrc.before-nix-darwin
+sudo mv /etc/bashrc /etc/bashrc.before-nix-darwin
+```
+
+**Why now and not later?** If you skip this and the auto-backup fails mid-bootstrap, you'll need to abort, move the files, and re-run the entire bootstrap. Doing it now costs nothing.
+
+> [!NOTE]
+> Between this step and completing the bootstrap, any new terminal you open may be missing some default macOS PATH entries (the original `/etc/zshrc` is gone). Keep your current terminal open and don't open new ones until after step 3.2.
+
+### 2.4 Clone the repo
 
 ```bash
 git clone <repo-url> ~/ivy-apps/repo/nixos
@@ -86,26 +100,44 @@ cd ~/ivy-apps/repo/nixos
 
 `darwin-rebuild` doesn't exist yet — it's installed *by* nix-darwin. The bootstrap command runs it once directly from the flake without installing anything permanently first.
 
-### 3.1 Run the bootstrap build
+### 3.1 Build the system closure
 
 ```bash
-nix run 'github:nix-darwin/nix-darwin#darwin-rebuild' -- switch --flake ~/ivy-apps/repo/nixos#macos-main
+nix run 'github:nix-darwin/nix-darwin/nix-darwin-25.11#darwin-rebuild' -- switch --flake .#macos-main
 ```
 
-**Why this instead of `darwin-rebuild switch`?** `darwin-rebuild` is provided by nix-darwin itself. On a fresh machine it doesn't exist yet. `nix run` builds and runs it from the flake input in a temporary environment without permanently installing it — after a successful switch the real `darwin-rebuild` binary is in your PATH for all future rebuilds.
+**Why pin the branch?** The `flake.nix` in this repo pins nix-darwin to the `nix-darwin-25.11` branch to match `nixpkgs/nixos-25.11`. Using the unversioned `github:nix-darwin/nix-darwin` will fetch whatever the default branch currently is, which may be a newer release — nix-darwin enforces a hard version match with nixpkgs and will abort with a mismatch error if they differ.
 
-**What this does:**
-1. Evaluates `darwinConfigurations.macos-main` from the flake.
-2. Builds the full system closure (nix-darwin activation scripts, home-manager, all packages).
-3. Activates the system: patches `/etc/zshrc`, `/etc/bashrc`, and `/etc/shells`; creates symlinks under `/run/current-system`; activates home-manager for your user.
+**Why this instead of `darwin-rebuild switch`?** `darwin-rebuild` is provided by nix-darwin itself. On a fresh machine it doesn't exist yet. `nix run` builds and runs it from the flake input in a temporary environment without permanently installing it.
 
-> [!NOTE]
-> nix-darwin will detect existing macOS-managed `/etc/zshrc` (and similar files) and **back them up** automatically with a `.before-nix-darwin` suffix before replacing them. This is safe — your original files are preserved.
+**What happens:** This command builds the full system closure (nix-darwin activation scripts, home-manager, all packages), then attempts to activate. The build phase runs as your user. The activation phase requires root and will fail with:
+
+```
+system activation must now be run as root
+```
+
+This is expected — note the store path printed in the error (e.g. `/nix/store/…-darwin-rebuild/bin/darwin-rebuild`). You need it for the next step.
 
 > [!NOTE]
 > The build downloads a large amount of packages on first run. Expect 5–20 minutes depending on your connection.
 
-### 3.2 Reload your shell
+### 3.2 Activate as root
+
+Take the store path from the error in step 3.1 and run activation as root:
+
+```bash
+sudo /nix/store/<hash>-darwin-rebuild/bin/darwin-rebuild switch --flake .#macos-main
+```
+
+**Why two steps?** Recent nix-darwin requires the activation script to run as root because it writes to `/etc`, `/run/current-system`, and registers launchd services. Running the full `nix run` command under `sudo` fails because `sudo` drops your user environment including the `nix` binary from `PATH`. The split — build as user, activate as root via the already-built store path — is the reliable workaround.
+
+**What activation does:**
+1. Patches `/etc/zshrc`, `/etc/bashrc`, and `/etc/shells` to source Nix and nix-darwin profile scripts.
+2. Creates symlinks under `/run/current-system`.
+3. Activates home-manager for your user.
+4. Registers any launchd services declared in the config.
+
+### 3.3 Reload your shell
 
 ```bash
 source /etc/zshrc
@@ -193,21 +225,52 @@ darwin-rebuild --list-generations
 
 ## Troubleshooting
 
+### nix-darwin / nixpkgs version mismatch
+
+```
+error: nix-darwin now uses release branches that correspond to Nixpkgs releases.
+       You are currently using nix-darwin 26.05 with Nixpkgs 25.11.
+```
+
+This happens when `github:nix-darwin/nix-darwin` (unversioned) is used in `flake.nix` and the default branch has advanced to a newer release. Fix it by ensuring the branch in `flake.nix` matches the nixpkgs branch:
+
+```nix
+nix-darwin = {
+  url = "github:nix-darwin/nix-darwin/nix-darwin-25.11";   # must match nixpkgs branch
+  inputs.nixpkgs.follows = "nixpkgs";
+};
+```
+
+Then update the lock entry and retry:
+
+```bash
+nix flake update nix-darwin
+nix run 'github:nix-darwin/nix-darwin/nix-darwin-25.11#darwin-rebuild' -- switch --flake .#macos-main
+```
+
+### `system activation must now be run as root`
+
+This is expected behaviour in recent nix-darwin — activation writes to `/etc` and `/run/current-system` and requires root. The build phase (the slow part) already completed successfully. Grab the store path from the error output and run activation directly:
+
+```bash
+sudo /nix/store/<hash>-darwin-rebuild/bin/darwin-rebuild switch --flake .#macos-main
+```
+
+**Why not `sudo nix run ...`?** `sudo` drops your user environment, removing `nix` from `PATH`. The store path bypasses this entirely.
+
 ### `/etc/zshrc` conflict error
 
 ```
 error: refusing to clobber existing file '/etc/zshrc'
 ```
 
-nix-darwin found the original macOS file without a `.before-nix-darwin` backup already present. Move it manually:
+You skipped step 2.3. Move the files manually and re-run activation:
 
 ```bash
 sudo mv /etc/zshrc /etc/zshrc.before-nix-darwin
 sudo mv /etc/bashrc /etc/bashrc.before-nix-darwin
 sudo mv /etc/zshenv /etc/zshenv.before-nix-darwin
 ```
-
-Then re-run the bootstrap command from step 3.1.
 
 ### `darwin-rebuild: command not found` after bootstrap
 
