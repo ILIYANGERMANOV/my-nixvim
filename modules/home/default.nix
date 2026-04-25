@@ -1,5 +1,8 @@
 { pkgs, userConfig, ... }: {
-  imports = [ ./nvim.nix ];
+  imports = [
+    ./nvim.nix
+    ./terminal.nix
+  ];
 
   home.stateVersion = "25.11";
 
