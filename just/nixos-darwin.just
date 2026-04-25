@@ -3,4 +3,4 @@
 
 # Rebuild and switch the system to the latest flake configuration.
 darwin-rebuild host:
-    darwin-rebuild switch --flake .#{{host}}
+    sudo darwin-rebuild switch --flake .#{{host}}
