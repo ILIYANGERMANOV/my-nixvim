@@ -73,6 +73,7 @@
     ripgrep
     fd
     jq
+    tree
     nerd-fonts.jetbrains-mono
   ];
 }
