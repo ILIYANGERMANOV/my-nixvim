@@ -1,6 +1,7 @@
 { pkgs, inputs, self }:
 let
   system = pkgs.stdenv.hostPlatform.system;
+  isLinux = pkgs.stdenv.hostPlatform.isLinux;
   nvim = inputs.nixvim.legacyPackages.${system}.makeNixvimWithModule {
     inherit pkgs;
     module = import "${self}/programs/nvim/ide.nix";
@@ -11,11 +12,12 @@ in pkgs.mkShell {
     just        # run Just recipes (just install <host>, just enroll-secure-boot, etc.)
     git         # clone the repo on the live ISO
     age         # age-keygen for generate-age-key recipe
-    sbctl       # Secure Boot key creation and enrollment
     nvim        # edit secrets and config files
     sops        # encrypt/decrypt secrets (just edit-secrets, just new-root-password)
     ssh-to-age  # convert SSH host keys to age keys
     whois       # provides mkpasswd for hashing passwords
+  ] ++ pkgs.lib.optionals isLinux [
+    sbctl       # Secure Boot key creation and enrollment (Linux-only)
   ];
   shellHook = ''
     export EDITOR=nvim
