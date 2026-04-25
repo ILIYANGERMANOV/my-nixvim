@@ -2,6 +2,7 @@
   imports = [
     ./nvim.nix
     ./terminal.nix
+    ./claude-code.nix
   ];
 
   home.username = userConfig.name;
