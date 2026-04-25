@@ -23,6 +23,10 @@
       url = "github:nix-community/lanzaboote/v1.0.0";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    nix-darwin = {
+      url = "github:nix-darwin/nix-darwin";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs = { self, ... }@inputs:
@@ -30,7 +34,7 @@
       lib = import ./lib { inherit inputs; root = self; };
     in
     {
-      lib = { inherit (lib) mkHaskellNvim; };
+      lib = { inherit (lib) mkHaskellNvim mkDarwinSystem; };
 
       devShells = lib.forAllSystems (pkgs: {
         web = import ./shells/web.nix { inherit pkgs inputs self; };
@@ -42,6 +46,10 @@
       nixosConfigurations = {
         lenovo-old = lib.mkNixosSystem "lenovo-old" "x86_64-linux";
         # next-host = lib.mkNixosSystem "next-host" "x86_64-linux";
+      };
+
+      darwinConfigurations = {
+        # my-mac = lib.mkDarwinSystem "my-mac" "aarch64-darwin";
       };
     };
 }
