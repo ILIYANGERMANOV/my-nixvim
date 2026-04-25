@@ -12,7 +12,7 @@
     settings = {
       theme = "tokyonight";
       font-family = "JetBrainsMono Nerd Font";
-      font-size = 13;
+      font-size = 20;
 
       window-decoration = true;
       # Maps Option to Alt so Neovim keybinds work on macOS; ignored on Linux
