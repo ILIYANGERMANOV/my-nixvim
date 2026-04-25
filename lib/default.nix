@@ -17,6 +17,7 @@ let
         "${root}/modules/nixos/security/sops.nix"
         "${root}/modules/nixos/security/disk-encryption.nix"
         "${root}/modules/nixos/security/secure-boot.nix"
+        "${root}/modules/nixos/user.nix"
         "${root}/modules/nixos/home-manager.nix"
         "${root}/hosts/${hostname}/configuration.nix"
       ];

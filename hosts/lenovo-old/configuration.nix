@@ -1,4 +1,4 @@
-{ config, modulesPath, root, ... }: {
+{ modulesPath, root, ... }: {
   imports = [
     (modulesPath + "/installer/scan/not-detected.nix")
     ./disk-config.nix
@@ -11,17 +11,12 @@
   networking.networkmanager.enable = true;
 
   sops.defaultSopsFile = "${root}/secrets/secrets.yaml";
-  sops.secrets.iliyan-password = { neededForUsers = true; };
 
-  users.mutableUsers = false;
-  users.users.iliyan = {
-    isNormalUser = true;
-    description = "Iliyan";
-    extraGroups = [ "wheel" "networkmanager" "video" "audio" ];
-    hashedPasswordFile = config.sops.secrets.iliyan-password.path;
+  myConfig.user = {
+    name = "iliyan";
+    fullName = "Iliyan Germanov";
+    email = "iliyan.germanov971@gmail.com";
   };
-
-  home-manager.users.iliyan = import "${root}/modules/home/default.nix";
 
   system.stateVersion = "25.11";
 }
