@@ -8,5 +8,5 @@ enroll-secure-boot:
     sudo sbctl enroll-keys --microsoft
 
 # Rebuild and switch the system to the latest flake configuration.
-rebuild host:
+nixos-rebuild host:
     sudo nixos-rebuild switch --flake .#{{host}}
