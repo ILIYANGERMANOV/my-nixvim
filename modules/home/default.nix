@@ -17,5 +17,6 @@
     curl
     htop
     firefox
+    just
   ];
 }
