@@ -103,7 +103,7 @@ cd ~/ivy-apps/repo/nixos
 ### 3.1 Build the system closure
 
 ```bash
-nix run 'github:nix-darwin/nix-darwin/nix-darwin-25.11#darwin-rebuild' -- switch --flake .#macos-main
+sudo nix run --extra-experimental-features 'nix-command flakes' 'github:nix-darwin/nix-darwin/nix-darwin-25.11#darwin-rebuild' -- switch --flake .#macos-main
 ```
 
 **Why pin the branch?** The `flake.nix` in this repo pins nix-darwin to the `nix-darwin-25.11` branch to match `nixpkgs/nixos-25.11`. Using the unversioned `github:nix-darwin/nix-darwin` will fetch whatever the default branch currently is, which may be a newer release — nix-darwin enforces a hard version match with nixpkgs and will abort with a mismatch error if they differ.

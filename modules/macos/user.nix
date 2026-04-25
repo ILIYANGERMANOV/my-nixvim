@@ -19,6 +19,10 @@ in
   };
 
   config = {
+    system.primaryUser = cfg.name;
+    users.users.${cfg.name} = {
+      home = "/Users/${cfg.name}";
+    };
     home-manager.users.${cfg.name} = import "${root}/modules/home/default.nix";
   };
 }
