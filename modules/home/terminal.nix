@@ -47,8 +47,12 @@
       nv = "nvim";
       ls = "eza --icons";
       ll = "eza -alF --icons";
-      cd = "z";
     };
+  };
+
+  programs.zoxide = {
+    enable = true;
+    enableZshIntegration = true;
   };
 
   programs.starship = {
@@ -65,7 +69,6 @@
 
   home.packages = with pkgs; [
     eza
-    zoxide
     fzf
     ripgrep
     fd
