@@ -49,7 +49,7 @@
       };
 
       darwinConfigurations = {
-        # my-mac = lib.mkDarwinSystem "my-mac" "aarch64-darwin";
+        macos-main = lib.mkDarwinSystem "macos-main" "aarch64-darwin";
       };
     };
 }

@@ -1,8 +1,8 @@
 { pkgs, ... }:
 
 {
-  # Needed on Linux so the terminal can locate the Nerd Font for Neovim devicons
-  fonts.fontconfig.enable = true;
+  # fontconfig is Linux-only; macOS locates fonts via ~/Library/Fonts automatically
+  fonts.fontconfig.enable = pkgs.stdenv.isLinux;
 
   programs.ghostty = {
     enable = true;
