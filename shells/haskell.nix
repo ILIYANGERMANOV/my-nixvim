@@ -4,13 +4,14 @@ let
   hpkgs = pkgs.haskellPackages;
   nvim = inputs.nixvim.legacyPackages.${system}.makeNixvimWithModule {
     inherit pkgs;
-    module = import "${self}/programs/nvim/ide.nix";
+    module = import "${self}/programs/nvim";
     extraSpecialArgs = {
       profile = "haskell";
       inherit hpkgs;
     };
   };
-in pkgs.mkShell {
+in
+pkgs.mkShell {
   packages = with pkgs; [
     nvim
     git
@@ -21,7 +22,7 @@ in pkgs.mkShell {
     hpkgs.haskell-language-server
     hpkgs.fourmolu
     hpkgs.hlint
-    (hpkgs.ghcWithPackages (_: []))
+    (hpkgs.ghcWithPackages (_: [ ]))
   ];
   shellHook = ''
     echo "Haskell IDE loaded — run 'nvim' to start."

@@ -3,10 +3,11 @@ let
   system = pkgs.stdenv.hostPlatform.system;
   nvim = inputs.nixvim.legacyPackages.${system}.makeNixvimWithModule {
     inherit pkgs;
-    module = import "${self}/programs/nvim/ide.nix";
+    module = import "${self}/programs/nvim";
     extraSpecialArgs = { profile = "web"; };
   };
-in pkgs.mkShell {
+in
+pkgs.mkShell {
   packages = with pkgs; [
     nvim
     git
