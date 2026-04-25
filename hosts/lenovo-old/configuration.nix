@@ -1,4 +1,4 @@
-{ config, pkgs, lib, modulesPath, root, ... }: {
+{ config, lib, modulesPath, root, ... }: {
   imports = [
     (modulesPath + "/installer/scan/not-detected.nix")
     ./disk-config.nix
@@ -12,7 +12,6 @@
     pkiBundle = "/etc/secureboot";
   };
   boot.initrd.availableKernelModules = [ "xhci_pci" "ahci" "nvme" "usb_storage" "sd_mod" ];
-  boot.initrd.kernelModules = [ "aesni_intel" "cryptd" ];
   boot.kernelModules = [ "kvm-intel" ];
 
   networking.hostName = "lenovo-old";

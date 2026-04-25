@@ -36,11 +36,15 @@ hosts/<new-host>/
 
 ### 1.2 Write `disk-config.nix`
 
-Copy `hosts/lenovo-old/disk-config.nix` and change:
+`disk-config.nix` only needs the block device path. Everything else (partition layout, LUKS2 cipher/KDF args, btrfs subvolumes, mount options, kernel crypto modules) is provided by `modules/nixos/security/disk-encryption.nix`.
 
-- `device` — the block device on the target machine (find it with `lsblk`).
+```nix
+{ ... }: {
+  security.diskEncryption.device = "/dev/nvme0n1";  # ← change this
+}
+```
 
-Everything else (partition sizes, LUKS2 cipher/KDF args, LUKS name, btrfs label, subvolumes, mount options) can stay identical. The LUKS `name` and btrfs label are only per-machine identifiers — they only need to differ if you ever physically attach two host disks to the same machine at the same time.
+Find the correct device name with `lsblk` on the target machine.
 
 ### 1.3 Register the host in `flake.nix`
 
@@ -53,30 +57,7 @@ nixosConfigurations = {
 
 ### 1.4 Write `configuration.nix`
 
-```nix
-{ config, pkgs, lib, modulesPath, root, ... }: {
-  imports = [
-    (modulesPath + "/installer/scan/not-detected.nix")
-    ./disk-config.nix
-  ];
-
-  boot.loader.systemd-boot.enable = lib.mkForce false;
-  boot.loader.efi.canTouchEfiVariables = true;
-  boot.lanzaboote = {
-    enable = true;
-    pkiBundle = "/etc/secureboot";
-  };
-  boot.initrd.availableKernelModules = [ "xhci_pci" "ahci" "nvme" "usb_storage" "sd_mod" ];
-  boot.initrd.kernelModules = [ "aesni_intel" "cryptd" ];
-
-  networking.hostName = "new-host";
-  networking.networkmanager.enable = true;
-
-  sops.defaultSopsFile = "${root}/secrets/secrets.yaml";
-
-  system.stateVersion = "25.11";
-}
-```
+See /hosts/lenovo-old/configuration.nix.
 
 > Tip: check `dmesg | grep -E 'nvme|ahci|xhci'` on a live ISO to confirm which kernel modules your hardware needs.
 
@@ -112,8 +93,10 @@ cd /tmp/nixos-config
 ```bash
 sudo nix run github:nix-community/disko -- \
   --mode disko \
-  hosts/<hostname>/disk-config.nix
+  --flake /tmp/nixos-config#<hostname>
 ```
+
+The `--flake` flag is required. `disk-config.nix` only sets `security.diskEncryption.device` — the full disk layout lives in `modules/nixos/security/disk-encryption.nix` and is only reachable through the NixOS module system, which the flake evaluation provides.
 
 This will:
 1. Wipe and re-partition the disk (GPT).
@@ -260,7 +243,7 @@ If you need to mount an already-formatted disk (e.g. you rebooted into a live IS
 ```bash
 sudo nix run github:nix-community/disko -- \
   --mode mount \
-  hosts/<hostname>/disk-config.nix
+  --flake /tmp/nixos-config#<hostname>
 ```
 
 This opens the LUKS container and mounts all btrfs subvolumes under `/mnt` without touching the partition table or formatting anything.

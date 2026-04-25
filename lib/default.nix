@@ -15,6 +15,7 @@ let
         "${root}/modules/nixos/desktop.nix"
         "${root}/modules/nixos/audio.nix"
         "${root}/modules/nixos/security/sops.nix"
+        "${root}/modules/nixos/security/disk-encryption.nix"
         "${root}/modules/nixos/home-manager.nix"
         "${root}/hosts/${hostname}/configuration.nix"
       ];
