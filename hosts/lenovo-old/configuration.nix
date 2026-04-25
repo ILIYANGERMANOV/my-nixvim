@@ -1,4 +1,4 @@
-{ modulesPath, root, ... }: {
+{ modulesPath, ... }: {
   imports = [
     (modulesPath + "/installer/scan/not-detected.nix")
     ./disk-config.nix
@@ -9,8 +9,6 @@
 
   networking.hostName = "lenovo-old";
   networking.networkmanager.enable = true;
-
-  sops.defaultSopsFile = "${root}/secrets/secrets.yaml";
 
   myConfig.user = {
     name = "iliyan";
