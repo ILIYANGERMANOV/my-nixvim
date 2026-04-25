@@ -1,4 +1,4 @@
-{ pkgs, ... }: {
+{ pkgs, userConfig, ... }: {
   imports = [ ./nvim.nix ];
 
   home.stateVersion = "25.11";
@@ -6,8 +6,8 @@
   programs.git = {
     enable = true;
     settings = {
-      user.name = "Iliyan Germanov";
-      user.email = "iliyan.germanov971@gmail.com";
+      user.name = userConfig.fullName;
+      user.email = userConfig.email;
       init.defaultBranch = "main";
     };
   };
@@ -17,5 +17,6 @@
     curl
     htop
     firefox
+    just
   ];
 }

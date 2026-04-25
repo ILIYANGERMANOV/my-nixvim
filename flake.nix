@@ -35,7 +35,7 @@
       devShells = lib.forAllSystems (pkgs: {
         web = import ./shells/web.nix { inherit pkgs inputs self; };
         haskell = import ./shells/haskell.nix { inherit pkgs inputs self; };
-        sops = import ./shells/sops.nix { inherit pkgs inputs self; };
+        nixos-install = import ./shells/nixos-install.nix { inherit pkgs inputs self; };
         default = import ./shells/web.nix { inherit pkgs inputs self; };
       });
 

@@ -11,6 +11,5 @@
   environment.systemPackages = with pkgs; [
     sops
     age
-    sbctl
   ];
 }

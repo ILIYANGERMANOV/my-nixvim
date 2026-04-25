@@ -14,7 +14,10 @@ let
         "${root}/modules/nixos/common.nix"
         "${root}/modules/nixos/desktop.nix"
         "${root}/modules/nixos/audio.nix"
-        "${root}/modules/nixos/sops.nix"
+        "${root}/modules/nixos/security/sops.nix"
+        "${root}/modules/nixos/security/disk-encryption.nix"
+        "${root}/modules/nixos/security/secure-boot.nix"
+        "${root}/modules/nixos/user.nix"
         "${root}/modules/nixos/home-manager.nix"
         "${root}/hosts/${hostname}/configuration.nix"
       ];
@@ -35,6 +38,7 @@ let
       };
     };
 
-in {
+in
+{
   inherit mkNixosSystem forAllSystems mkHaskellNvim;
 }
