@@ -2,7 +2,7 @@
   networking.hostName = "macos-main";
 
   myConfig.user = {
-    name = "iliyan";
+    name = "iliyangermanov";
     fullName = "Iliyan Germanov";
     email = "iliyan.germanov971@gmail.com";
   };
