@@ -3,7 +3,7 @@
 
   nix.settings = {
     experimental-features = [ "nix-command" "flakes" ];
-    auto-optimise-store = true;
+    trusted-users = [ "root" "@admin" ];
   };
 
   # nix-darwin requires zsh to be enabled at the system level for login shells
