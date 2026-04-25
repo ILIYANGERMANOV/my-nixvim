@@ -23,6 +23,19 @@ let
       ];
     };
 
+  mkDarwinSystem = hostname: system:
+    inputs.nix-darwin.lib.darwinSystem {
+      inherit system;
+      specialArgs = { inherit inputs root; };
+      modules = [
+        inputs.home-manager.darwinModules.home-manager
+        "${root}/modules/macos/common.nix"
+        "${root}/modules/macos/user.nix"
+        "${root}/modules/macos/home-manager.nix"
+        "${root}/hosts/${hostname}/configuration.nix"
+      ];
+    };
+
   forAllSystems = f:
     lib.genAttrs
       [ "x86_64-linux" "aarch64-linux" "x86_64-darwin" "aarch64-darwin" ]
@@ -31,7 +44,7 @@ let
   mkHaskellNvim = { pkgs, hpkgs }:
     inputs.nixvim.legacyPackages.${pkgs.stdenv.hostPlatform.system}.makeNixvimWithModule {
       inherit pkgs;
-      module = import "${root}/programs/nvim/ide.nix";
+      module = import "${root}/programs/nvim";
       extraSpecialArgs = {
         profile = "haskell";
         inherit hpkgs;
@@ -40,5 +53,5 @@ let
 
 in
 {
-  inherit mkNixosSystem forAllSystems mkHaskellNvim;
+  inherit mkNixosSystem mkDarwinSystem forAllSystems mkHaskellNvim;
 }

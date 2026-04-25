@@ -1,5 +1,15 @@
 { pkgs, userConfig, ... }: {
-  imports = [ ./nvim.nix ];
+  imports = [
+    ./nvim.nix
+    ./terminal.nix
+    ./claude-code.nix
+  ];
+
+  home.username = userConfig.name;
+  home.homeDirectory =
+    if pkgs.stdenv.isDarwin
+    then "/Users/${userConfig.name}"
+    else "/home/${userConfig.name}";
 
   home.stateVersion = "25.11";
 
