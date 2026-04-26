@@ -1,11 +1,141 @@
-{ ... }:
+{ lib, config, ... }:
 
+let
+  cfg = config.myNixVim;
+in
 {
-  colorschemes.catppuccin.enable = true;
-  opts = {
-    termguicolors = true;
+  options.myNixVim.style = lib.mkOption {
+    type = lib.types.enum [ "catppuccin_light" "catppuccin_dark" "tokyonight" ];
+    default = "catppuccin_dark";
+    description = "Select the color theme for NeoVim.";
   };
-  plugins = {
-    web-devicons.enable = true;
-  };
+
+  config = lib.mkMerge [
+
+    # --- BASE UI & STYLING CONFIGURATION ---
+    {
+      opts = {
+        termguicolors = true;
+      };
+
+      plugins = {
+        # Core Icons
+        web-devicons.enable = true;
+
+        # Next-Gen UI (Command line, search, and notifications)
+        notify = {
+          enable = true;
+          settings.backgroundColour = "#000000";
+        };
+        noice = {
+          enable = true;
+          settings.presets = {
+            bottom_search = true;
+            command_palette = true;
+            long_message_to_split = true;
+            lsp_doc_border = true;
+          };
+        };
+
+        # Statusline and Tabline
+        lualine = {
+          enable = true;
+          settings.options = {
+            component_separators = { left = "│"; right = "│"; };
+            section_separators = { left = ""; right = ""; };
+            theme = "auto";
+          };
+        };
+        bufferline.enable = true;
+
+        # Indentation Guides
+        indent-blankline = {
+          enable = true;
+          settings.scope = {
+            enabled = true;
+            show_start = true;
+          };
+        };
+
+        # Welcome Dashboard
+        alpha = {
+          enable = true;
+          theme = "dashboard";
+        };
+
+        # Nvim-Tree Styling (merges with file-tree.nix settings)
+        nvim-tree = {
+          enable = true;
+          settings = {
+            view.width = 30;
+            renderer = {
+              indent_markers.enable = true;
+              icons.glyphs.folder = {
+                arrow_closed = "";
+                arrow_open = "";
+              };
+            };
+          };
+        };
+
+        # Telescope Styling (merges with search.nix settings.defaults)
+        telescope = {
+          enable = true;
+          settings.defaults = {
+            prompt_prefix = "   ";
+            selection_caret = "  ";
+            # Enforce rounded borders for telescope
+            borderchars = [ "─" "│" "─" "│" "╭" "╮" "╯" "╰" ];
+          };
+        };
+
+        # Enforce rounded borders for completion windows (merges with auto-complete.nix)
+        cmp.settings.window = {
+          completion.border = "rounded";
+          documentation.border = "rounded";
+        };
+      };
+
+      # Enforce rounded borders for LSP hovers and diagnostics globally
+      extraConfigLua = ''
+        local _border = "rounded"
+        vim.lsp.handlers["textDocument/hover"] = vim.lsp.with(vim.lsp.handlers.hover, { border = _border })
+        vim.lsp.handlers["textDocument/signatureHelp"] = vim.lsp.with(vim.lsp.handlers.signature_help, { border = _border })
+        vim.diagnostic.config{ float={border=_border} }
+      '';
+    }
+
+    # --- THEME: CATPPUCCIN LIGHT (Latte) ---
+    (lib.mkIf (cfg.style == "catppuccin_light") {
+      colorschemes.catppuccin = {
+        enable = true;
+        settings.flavour = "latte";
+      };
+    })
+
+    # --- THEME: CATPPUCCIN DARK (Mocha) ---
+    (lib.mkIf (cfg.style == "catppuccin_dark") {
+      colorschemes.catppuccin = {
+        enable = true;
+        settings.flavour = "mocha";
+      };
+    })
+
+    # --- THEME: TOKYONIGHT (Moon) ---
+    (lib.mkIf (cfg.style == "tokyonight") {
+      colorschemes.tokyonight = {
+        enable = true;
+        settings = {
+          style = "moon";
+          transparent = true;
+          terminal_colors = true;
+          styles = {
+            floats = "transparent";
+            sidebars = "transparent";
+          };
+        };
+      };
+    })
+
+  ];
 }
