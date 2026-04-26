@@ -57,5 +57,8 @@
     };
 
     luasnip.enable = true;
+
+    # Surround text objects (ys, cs, ds)
+    nvim-surround.enable = true;
   };
 }

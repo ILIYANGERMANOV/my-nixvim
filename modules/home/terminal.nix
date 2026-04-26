@@ -42,11 +42,36 @@
     syntaxHighlighting.enable = true;
 
     shellAliases = {
-      g = "git";
-      gs = "git status";
+      # General
       nv = "nvim";
       ls = "eza --icons";
       ll = "eza -alF --icons";
+
+      # Git — core
+      gs = "git status";
+      gd = "git diff";
+      gds = "git diff --staged";
+
+      # Git — staging & committing
+      ga = "git add";
+      gc = "git commit -m";
+
+      # Legacy checkout (kept for muscle memory / detached HEAD workflows)
+      gco = "git checkout";
+      gcob = "git checkout -b";
+
+      # Git — remote
+      gp = "git pull";
+      gpu = "git push";
+      gpuf = "git push --force-with-lease";
+
+      # Git — log
+      gl = "git log --graph --decorate";
+      gll = "git log --graph --decorate --stat";
+
+      # Git — reset
+      grh = "git reset --hard";
+      grs = "git reset --soft";
     };
   };
 

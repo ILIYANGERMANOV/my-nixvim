@@ -1,6 +1,15 @@
 { ... }:
 
 {
+  keymaps = [
+    {
+      mode = "n";
+      key = "<leader>ft";
+      action = "<cmd>NvimTreeToggle<CR>";
+      options.desc = "File Tree";
+    }
+  ];
+
   plugins = {
     nvim-tree = {
       enable = true;
