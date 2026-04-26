@@ -27,4 +27,7 @@ in
 
   # All packages needed to use Claude Code in a shell or home environment.
   packages = [ pkgs.claude-code statusline settingsMerge ];
+
+  # Ready-to-use string for home.activation or shellHook.
+  activationScript = "${settingsMerge}/bin/claude-settings-merge \"${statusline}/bin/claude-statusline\"";
 }

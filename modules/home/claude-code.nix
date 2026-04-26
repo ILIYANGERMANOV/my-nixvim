@@ -7,7 +7,5 @@ in
   home.packages = [ claude.package ];
 
   home.activation.claudeCodeSettings =
-    lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-      ${claude.settingsMerge}/bin/claude-settings-merge "${claude.statusline}/bin/claude-statusline"
-    '';
+    lib.hm.dag.entryAfter [ "writeBoundary" ] claude.activationScript;
 }
