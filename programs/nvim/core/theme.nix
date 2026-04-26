@@ -25,7 +25,10 @@ in
         # Next-Gen UI (Command line, search, and notifications)
         notify = {
           enable = true;
-          settings.backgroundColour = "#000000";
+          settings = {
+            backgroundColour = "#000000";
+            timeout = 2000;
+          };
         };
         noice = {
           enable = true;
@@ -95,6 +98,15 @@ in
           documentation.border = "rounded";
         };
       };
+
+      keymaps = [
+        {
+          mode = "n";
+          key = "<leader>nd";
+          action = "<cmd>NoiceDismiss<CR>";
+          options.desc = "Dismiss notifications";
+        }
+      ];
 
       # Enforce rounded borders for LSP hovers and diagnostics globally
       extraConfigLua = ''
