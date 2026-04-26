@@ -128,6 +128,22 @@ let
     '';
   };
 
+  # Merges managed keys into ~/.claude/settings.json, preserving user-set values.
+  settingsMerge = pkgs.writeShellApplication {
+    name = "claude-settings-merge";
+    runtimeInputs = [ pkgs.jq ];
+    text = ''
+      statusline_cmd="''${1:-}"
+      settings_file="$HOME/.claude/settings.json"
+      mkdir -p "$(dirname "$settings_file")"
+      [ ! -f "$settings_file" ] && printf '{}' > "$settings_file"
+      tmp=$(mktemp)
+      jq --arg cmd "$statusline_cmd" \
+        '. + {statusLine: {type: "command", command: $cmd}, autoMemoryEnabled: false, effortLevel: "medium"}' \
+        "$settings_file" > "$tmp" && mv "$tmp" "$settings_file"
+    '';
+  };
+
   # Orchestrator: reads JSON from stdin, dispatches to sub-scripts, assembles output.
   statusline = pkgs.writeShellApplication {
     name = "claude-statusline";
@@ -166,14 +182,6 @@ in
   # are preserved unchanged.
   home.activation.claudeCodeSettings =
     lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-      settings_file="$HOME/.claude/settings.json"
-      mkdir -p "$(dirname "$settings_file")"
-      if [ ! -f "$settings_file" ]; then
-        printf '{}' > "$settings_file"
-      fi
-      tmp=$(mktemp)
-      ${pkgs.jq}/bin/jq --arg cmd "${statusline}/bin/claude-statusline" \
-        '. + {statusLine: {type: "command", command: $cmd}}' \
-        "$settings_file" > "$tmp" && mv "$tmp" "$settings_file"
+      ${settingsMerge}/bin/claude-settings-merge "${statusline}/bin/claude-statusline"
     '';
 }
