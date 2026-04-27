@@ -24,6 +24,7 @@
   };
 
   home.packages = with pkgs; [
+    gh
     wget
     curl
     htop
