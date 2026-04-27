@@ -1,9 +1,11 @@
 { inputs, root, config, ... }: {
-  home-manager.useGlobalPkgs = true;
-  home-manager.useUserPackages = true;
-  home-manager.sharedModules = [ inputs.nixvim.homeModules.nixvim ];
-  home-manager.extraSpecialArgs = {
-    inherit root;
-    userConfig = config.myConfig.user;
+  home-manager = {
+    useGlobalPkgs = true;
+    useUserPackages = true;
+    sharedModules = [ inputs.nixvim.homeModules.nixvim ];
+    extraSpecialArgs = {
+      inherit root;
+      userConfig = config.myConfig.user;
+    };
   };
 }
