@@ -1,21 +1,5 @@
-# ─── Nix Darwin ───────────────────────────────────────────────────────────────
-# Commands for managing a macOS Nix Darwin configuration.
-
-# Rebuild and switch the system to the latest flake configuration.
-darwin-rebuild host:
-    sudo darwin-rebuild switch --flake .#{{host}}
-
-# Dry-run: check the config compiles without applying it.
-darwin-build host:
-    darwin-rebuild build --flake .#{{host}}
-
-# Roll back to the previous system generation.
-darwin-rollback:
-    darwin-rebuild rollback
-
-# List all system generations.
-darwin-generations:
-    darwin-rebuild --list-generations
+# ─── Nix Darwin — Install ────────────────────────────────────────────────────
+# One-time setup commands for bootstrapping nix-darwin on a new macOS machine.
 
 # Set all three macOS hostname values (required before first bootstrap).
 darwin-set-hostname host:
