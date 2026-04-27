@@ -39,7 +39,7 @@ Hosts declare only their hostname and user identity. All real configuration live
 
 ### `lib/` — system assembly
 
-Helpers that compose inputs, modules, and hosts into complete NixOS/Darwin system configurations. Also exposes utilities for external flake consumers (e.g. `mkHaskellNvim`).
+Helpers that compose inputs, modules, and hosts into complete NixOS/Darwin system configurations.
 
 ## Adding a New Program
 
@@ -47,3 +47,17 @@ Helpers that compose inputs, modules, and hosts into complete NixOS/Darwin syste
 2. Create `modules/home/<name>.nix` as a thin HM wrapper that imports it via `root`.
 3. Register the HM module in `modules/home/default.nix`.
 4. Optionally import `programs/<name>` directly in any `shells/` that need it.
+
+## Neovim + LSP Architecture
+
+**Neovim owns LSP client config. Project dev shells own LSP binaries.**
+
+- `programs/nvim/languages/*.nix` — LSP client config only (`package = null` on all servers except `nil_ls`). No `extraPackages` for language tooling.
+- `modules/home/languages/*.nix` — global LSP binaries and dev tools installed via Home Manager (e.g. `hls`, `fourmolu`, `typescript-language-server`).
+- `nil_ls` is the only LSP with its binary baked into Neovim — Nix files have no project dev shell.
+
+**direnv** (enabled in `modules/home/default.nix` via `programs.direnv.nix-direnv`) auto-activates a project's dev shell on `cd`. Project flakes only need a `.envrc` containing `use flake`. This puts project-pinned LSP binaries (e.g. GHC-matched HLS) on PATH, which Neovim's lspconfig picks up automatically.
+
+Project flakes have **no dependency on this nixos repo** — they are standalone.
+
+**Context-aware keymaps** (`programs/nvim/core/context-aware-keymaps.nix`) provide a single `<leader>tt` that dispatches to the right test runner at runtime. The registry (`_G.ContextRunners`) is initialized in `extraConfigLuaPre` (runs before all plugin/language Lua) to avoid ordering issues. Each language file registers its runner via `_G.RegisterContextRunner` in `extraConfigLua`.
