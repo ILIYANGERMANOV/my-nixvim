@@ -3,7 +3,9 @@
     ./nvim.nix
     ./terminal.nix
     ./claude-code.nix
-    ./web-dev.nix
+    ./languages/typescript.nix
+    ./languages/haskell.nix
+    ./languages/nix.nix
   ];
 
   home.username = userConfig.name;

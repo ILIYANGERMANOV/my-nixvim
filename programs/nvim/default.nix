@@ -1,4 +1,4 @@
-{ pkgs, lib, profile, ... }:
+{ pkgs, ... }:
 
 {
   imports = [
@@ -13,9 +13,7 @@
     ./core/clipboard.nix
     ./languages/nix.nix
     ./languages/mdc.nix
-  ] ++ lib.optionals (profile == "web") [
     ./languages/typescript.nix
-  ] ++ lib.optionals (profile == "haskell") [
     ./languages/haskell.nix
   ];
 

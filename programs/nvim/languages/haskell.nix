@@ -1,4 +1,4 @@
-{ pkgs, lib, hpkgs ? null, ... }:
+{ pkgs, ... }:
 
 {
   keymaps = [
@@ -80,13 +80,4 @@
       cabal = [ "cabal_fmt" ];
     };
   };
-
-  extraPackages = [
-    pkgs.cabal-install
-    pkgs.fourmolu
-    pkgs.hlint
-  ] ++ lib.optionals (hpkgs != null) [
-    hpkgs.cabal-fmt
-    hpkgs.haskell-language-server
-  ];
 }
