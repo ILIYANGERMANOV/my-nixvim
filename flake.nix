@@ -50,6 +50,7 @@
 
       darwinConfigurations = {
         macos-main = lib.mkDarwinSystem "macos-main" "aarch64-darwin";
+        macos-work = lib.mkDarwinSystem "macos-work" "aarch64-darwin";
       };
     };
 }
