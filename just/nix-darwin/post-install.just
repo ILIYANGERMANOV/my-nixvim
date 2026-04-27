@@ -11,8 +11,8 @@ darwin-build host:
 
 # Roll back to the previous system generation.
 darwin-rollback:
-    darwin-rebuild rollback
+    sudo darwin-rebuild rollback
 
 # List all system generations.
 darwin-generations:
-    darwin-rebuild --list-generations
+    sudo darwin-rebuild --list-generations
