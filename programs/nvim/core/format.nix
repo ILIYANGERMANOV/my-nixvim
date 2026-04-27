@@ -19,7 +19,4 @@
     };
   };
 
-  extraPackages = [
-    pkgs.nixpkgs-fmt
-  ];
 }

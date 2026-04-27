@@ -3,7 +3,7 @@
     enable = true;
     defaultEditor = true;
     imports = [
-      (args@{ pkgs, ... }: import "${root}/programs/nvim" (args // { profile = "web"; }))
+      (import "${root}/programs/nvim")
     ];
   };
 }

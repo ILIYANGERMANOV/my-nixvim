@@ -11,6 +11,7 @@
     ./core/search.nix
     ./core/lsp.nix
     ./core/clipboard.nix
+    ./core/context-aware-keymaps.nix
     ./languages/nix.nix
     ./languages/mdc.nix
     ./languages/typescript.nix

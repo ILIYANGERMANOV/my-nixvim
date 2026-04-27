@@ -4,12 +4,6 @@
   keymaps = [
     {
       mode = "n";
-      key = "<leader>tt";
-      action = ''<cmd>lua require("toggleterm").exec("cabal test --test-show-details=direct", 1)<CR>'';
-      options.desc = "Run Cabal Tests";
-    }
-    {
-      mode = "n";
       key = "<leader>rr";
       action = ''<cmd>lua require("toggleterm").exec("cabal repl", 1)<CR>'';
       options.desc = "Haskell REPL";
@@ -28,6 +22,18 @@
       vim.cmd('edit')
       vim.notify("♻️  HLS Restarted", vim.log.levels.INFO)
     end
+
+    _G.RegisterContextRunner({
+      detect = function(cwd)
+        return vim.fn.glob(cwd .. "/*.cabal") ~= ""
+          or vim.fn.filereadable(cwd .. "/cabal.project") == 1
+      end,
+      run = function(action)
+        if action == "test" then
+          require("toggleterm").exec("cabal test --test-show-details=direct", 1)
+        end
+      end,
+    })
   '';
 
   autoCmd = [
