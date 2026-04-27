@@ -10,7 +10,7 @@
     }
   ];
 
-  extraConfigLua = ''
+  extraConfigLuaPre = ''
     -- Registry of context-aware runners.
     -- Each entry: { detect = fn(cwd) -> bool, run = fn(action) }
     _G.ContextRunners = {}
