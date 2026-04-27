@@ -10,5 +10,6 @@ in
     hpkgs.haskell-language-server
     hpkgs.implicit-hie
     hpkgs.cabal-fmt
+    (pkgs.haskell.lib.compose.justStaticExecutables hpkgs.hspec-golden)
   ];
 }
