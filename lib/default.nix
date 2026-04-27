@@ -40,18 +40,7 @@ let
     lib.genAttrs
       [ "x86_64-linux" "aarch64-linux" "x86_64-darwin" "aarch64-darwin" ]
       (system: f (import inputs.nixpkgs { inherit system; }));
-
-  mkHaskellNvim = { pkgs, hpkgs }:
-    inputs.nixvim.legacyPackages.${pkgs.stdenv.hostPlatform.system}.makeNixvimWithModule {
-      inherit pkgs;
-      module = import "${root}/programs/nvim";
-      extraSpecialArgs = {
-        profile = "haskell";
-        inherit hpkgs;
-      };
-    };
-
 in
 {
-  inherit mkNixosSystem mkDarwinSystem forAllSystems mkHaskellNvim;
+  inherit mkNixosSystem mkDarwinSystem forAllSystems;
 }

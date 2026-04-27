@@ -1,13 +1,7 @@
-{ pkgs, lib, hpkgs ? null, ... }:
+{ pkgs, ... }:
 
 {
   keymaps = [
-    {
-      mode = "n";
-      key = "<leader>tt";
-      action = ''<cmd>lua require("toggleterm").exec("cabal test --test-show-details=direct", 1)<CR>'';
-      options.desc = "Run Cabal Tests";
-    }
     {
       mode = "n";
       key = "<leader>rr";
@@ -28,6 +22,18 @@
       vim.cmd('edit')
       vim.notify("♻️  HLS Restarted", vim.log.levels.INFO)
     end
+
+    _G.RegisterContextRunner({
+      detect = function(cwd)
+        return vim.fn.glob(cwd .. "/*.cabal") ~= ""
+          or vim.fn.filereadable(cwd .. "/cabal.project") == 1
+      end,
+      run = function(action)
+        if action == "test" then
+          require("toggleterm").exec("cabal test --test-show-details=direct", 1)
+        end
+      end,
+    })
   '';
 
   autoCmd = [
@@ -50,7 +56,7 @@
 
       servers.hls = {
         enable = true;
-        package = if hpkgs != null then hpkgs.haskell-language-server else null;
+        package = null;
         installGhc = false;
         settings = {
           haskell = {
@@ -80,13 +86,4 @@
       cabal = [ "cabal_fmt" ];
     };
   };
-
-  extraPackages = [
-    pkgs.cabal-install
-    pkgs.fourmolu
-    pkgs.hlint
-  ] ++ lib.optionals (hpkgs != null) [
-    hpkgs.cabal-fmt
-    hpkgs.haskell-language-server
-  ];
 }

@@ -3,7 +3,9 @@
     ./nvim.nix
     ./terminal.nix
     ./claude-code.nix
-    ./web-dev.nix
+    ./languages/typescript.nix
+    ./languages/haskell.nix
+    ./languages/nix.nix
   ];
 
   home.username = userConfig.name;
@@ -21,6 +23,12 @@
       user.email = userConfig.email;
       init.defaultBranch = "main";
     };
+  };
+
+  programs.direnv = {
+    enable = true;
+    nix-direnv.enable = true;
+    package = pkgs.direnv.overrideAttrs (_: { doCheck = false; });
   };
 
   home.packages = with pkgs; [

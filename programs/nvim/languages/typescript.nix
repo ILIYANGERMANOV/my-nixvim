@@ -4,12 +4,6 @@
   keymaps = [
     {
       mode = "n";
-      key = "<leader>tt";
-      action = ''<cmd>lua require("toggleterm").exec("npm run test", 1)<CR>'';
-      options.desc = "Run Tests (NPM)";
-    }
-    {
-      mode = "n";
       key = "<leader>oi";
       action = "<cmd>TSToolsRemoveUnused<CR>";
       options.desc = "Clean Unused Imports (TS)";
@@ -25,6 +19,17 @@
 
   extraConfigLua = ''
     vim.treesitter.language.register('markdown', 'mdx')
+
+    _G.RegisterContextRunner({
+      detect = function(cwd)
+        return vim.fn.filereadable(cwd .. "/package.json") == 1
+      end,
+      run = function(action)
+        if action == "test" then
+          require("toggleterm").exec("npm run test", 1)
+        end
+      end,
+    })
   '';
 
   plugins = {
@@ -51,9 +56,9 @@
     };
 
     lsp.servers = {
-      biome.enable = true;
-      html.enable = true;
-      cssls.enable = true;
+      biome = { enable = true; package = null; };
+      html = { enable = true; package = null; };
+      cssls = { enable = true; package = null; };
     };
 
     nvim-autopairs.settings.ts_config = {
@@ -70,9 +75,4 @@
       mdx = [ "biome" ];
     };
   };
-
-  extraPackages = [
-    pkgs.nodePackages.typescript-language-server
-    pkgs.vscode-langservers-extracted
-  ];
 }

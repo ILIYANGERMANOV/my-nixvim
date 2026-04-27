@@ -1,4 +1,4 @@
-{ pkgs, lib, profile, ... }:
+{ pkgs, ... }:
 
 {
   imports = [
@@ -11,11 +11,10 @@
     ./core/search.nix
     ./core/lsp.nix
     ./core/clipboard.nix
+    ./core/context-aware-keymaps.nix
     ./languages/nix.nix
     ./languages/mdc.nix
-  ] ++ lib.optionals (profile == "web") [
     ./languages/typescript.nix
-  ] ++ lib.optionals (profile == "haskell") [
     ./languages/haskell.nix
   ];
 
