@@ -160,7 +160,46 @@ The JetBrainsMono Nerd Font must be present for Neovim devicons to render correc
 
 ---
 
-## Part 5 — Day-to-day usage
+## Part 5 — Post-install: grant Ghostty Full Disk Access
+
+nix-darwin manages dotfiles via home-manager activation scripts that remove and re-create symlinks. Ghostty needs Full Disk Access for this to succeed — without it the activation aborts with a permission error.
+
+### 5.1 Open Ghostty
+
+Launch Ghostty from Spotlight (`⌘ Space → Ghostty`) or from `/Applications/Ghostty.app`. All subsequent steps should be run inside Ghostty.
+
+### 5.2 Run the first rebuild inside Ghostty
+
+```bash
+just darwin-rebuild <host>
+```
+
+Replace `<host>` with your host name (e.g. `macos-main`). The build will likely fail with:
+
+```
+Error: Unable to remove some files. Please enable Full Disk Access for your terminal
+under System Settings → Privacy & Security → Full Disk Access.
+```
+
+That error is expected — it confirms Ghostty lacks the permission. Continue to the next step.
+
+### 5.3 Grant Full Disk Access to Ghostty
+
+1. Open **System Settings → Privacy & Security → Full Disk Access**
+2. Click the **+** button and add **Ghostty** (or toggle it on if it is already listed)
+3. Restart Ghostty for the permission to take effect
+
+### 5.4 Re-run the rebuild
+
+```bash
+just darwin-rebuild <host>
+```
+
+The activation should now complete without errors. All home-manager symlinks will be created successfully.
+
+---
+
+## Part 6 — Day-to-day usage
 
 ### Rebuild after config changes
 

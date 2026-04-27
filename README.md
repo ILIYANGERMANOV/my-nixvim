@@ -1,6 +1,6 @@
 # My NixOS (experimental toy project)
 
-This is a personal playground for experimenting with NixOS. I don't run it on production or my primary machine — the configuration is rough, likely has security vulnerabilities, and is not intended for anyone else to use.
+This is a personal playground for experimenting with NixOS. It is not intended for anyone else to use.
 
 ---
 
