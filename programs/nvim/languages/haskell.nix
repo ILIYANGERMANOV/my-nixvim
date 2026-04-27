@@ -50,7 +50,7 @@
 
       servers.hls = {
         enable = true;
-        package = if hpkgs != null then hpkgs.haskell-language-server else null;
+        package = null;
         installGhc = false;
         settings = {
           haskell = {
