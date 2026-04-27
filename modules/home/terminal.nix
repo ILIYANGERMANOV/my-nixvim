@@ -4,102 +4,104 @@
   # fontconfig is Linux-only; macOS locates fonts via ~/Library/Fonts automatically
   fonts.fontconfig.enable = pkgs.stdenv.isLinux;
 
-  programs.ghostty = {
-    enable = true;
-    package = if pkgs.stdenv.isDarwin then null else pkgs.ghostty;
-    enableZshIntegration = true;
+  programs = {
+    ghostty = {
+      enable = true;
+      package = if pkgs.stdenv.isDarwin then null else pkgs.ghostty;
+      enableZshIntegration = true;
 
-    settings = {
-      theme = "tokyonight";
-      font-family = "JetBrainsMono Nerd Font";
-      font-size = 20;
+      settings = {
+        theme = "tokyonight";
+        font-family = "JetBrainsMono Nerd Font";
+        font-size = 20;
 
-      window-decoration = true;
-      # Maps Option to Alt so Neovim keybinds work on macOS; ignored on Linux
-      macos-option-as-alt = true;
-      macos-window-shadow = true;
+        window-decoration = true;
+        # Maps Option to Alt so Neovim keybinds work on macOS; ignored on Linux
+        macos-option-as-alt = true;
+        macos-window-shadow = true;
 
-      scrollback-limit = 10000;
-      copy-on-select = true;
-      mouse-hide-while-typing = true;
+        scrollback-limit = 10000;
+        copy-on-select = true;
+        mouse-hide-while-typing = true;
 
-      keybind = [
-        "ctrl+t=new_tab"
-        "ctrl+w=close_surface"
-        "ctrl+tab=next_tab"
-        "ctrl+shift+tab=previous_tab"
-        "ctrl+shift+enter=new_split:right"
-        "ctrl+shift+down=new_split:down"
-        "ctrl+left=goto_split:left"
-        "ctrl+right=goto_split:right"
-        "super+n=new_window"
-        "ctrl+shift+n=new_window"
-      ];
+        keybind = [
+          "ctrl+t=new_tab"
+          "ctrl+w=close_surface"
+          "ctrl+tab=next_tab"
+          "ctrl+shift+tab=previous_tab"
+          "ctrl+shift+enter=new_split:right"
+          "ctrl+shift+down=new_split:down"
+          "ctrl+left=goto_split:left"
+          "ctrl+right=goto_split:right"
+          "super+n=new_window"
+          "ctrl+shift+n=new_window"
+        ];
+      };
     };
-  };
 
-  programs.zsh = {
-    enable = true;
-    enableCompletion = true;
-    autosuggestion.enable = true;
-    syntaxHighlighting.enable = true;
+    zsh = {
+      enable = true;
+      enableCompletion = true;
+      autosuggestion.enable = true;
+      syntaxHighlighting.enable = true;
 
-    shellAliases = {
-      # General
-      nv = "nvim";
-      ls = "eza --icons";
-      ll = "eza -alF --icons";
+      shellAliases = {
+        # General
+        nv = "nvim";
+        ls = "eza --icons";
+        ll = "eza -alF --icons";
 
-      # Git — core
-      gs = "git status";
-      gd = "git diff";
-      gds = "git diff --staged";
+        # Git — core
+        gs = "git status";
+        gd = "git diff";
+        gds = "git diff --staged";
 
-      # Git — staging & committing
-      ga = "git add";
-      gc = "git commit -m";
+        # Git — staging & committing
+        ga = "git add";
+        gc = "git commit -m";
 
-      # Git — branches
-      gb = "git branch";
-      gbd = "git branch -D";
+        # Git — branches
+        gb = "git branch";
+        gbd = "git branch -D";
 
-      # Legacy checkout (kept for muscle memory / detached HEAD workflows)
-      gco = "git checkout";
-      gcob = "git checkout -b";
+        # Legacy checkout (kept for muscle memory / detached HEAD workflows)
+        gco = "git checkout";
+        gcob = "git checkout -b";
 
-      # Git — remote
-      gp = "git pull";
-      gpu = "git push";
-      gpuf = "git push --force-with-lease";
+        # Git — remote
+        gp = "git pull";
+        gpu = "git push";
+        gpuf = "git push --force-with-lease";
 
-      # Git — log
-      gl = "git log --graph --decorate";
-      gll = "git log --graph --decorate --stat";
+        # Git — log
+        gl = "git log --graph --decorate";
+        gll = "git log --graph --decorate --stat";
 
-      # Git — reset
-      grh = "git reset --hard";
-      grs = "git reset --soft";
+        # Git — reset
+        grh = "git reset --hard";
+        grs = "git reset --soft";
+      };
     };
-  };
 
-  programs.fzf = {
-    enable = true;
-    enableZshIntegration = true;
-  };
+    fzf = {
+      enable = true;
+      enableZshIntegration = true;
+    };
 
-  programs.zoxide = {
-    enable = true;
-    enableZshIntegration = true;
-  };
+    zoxide = {
+      enable = true;
+      enableZshIntegration = true;
+    };
 
-  programs.starship = {
-    enable = true;
-    enableZshIntegration = true;
-    settings = {
-      add_newline = false;
-      character = {
-        success_symbol = "[➜](bold green)";
-        error_symbol = "[✗](bold red)";
+    starship = {
+      enable = true;
+      enableZshIntegration = true;
+      settings = {
+        add_newline = false;
+        character = {
+          success_symbol = "[➜](bold green)";
+          error_symbol = "[✗](bold red)";
+        };
       };
     };
   };

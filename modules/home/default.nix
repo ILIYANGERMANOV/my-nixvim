@@ -8,13 +8,22 @@
     ./languages/nix.nix
   ];
 
-  home.username = userConfig.name;
-  home.homeDirectory =
-    if pkgs.stdenv.isDarwin
-    then "/Users/${userConfig.name}"
-    else "/home/${userConfig.name}";
-
-  home.stateVersion = "25.11";
+  home = {
+    username = userConfig.name;
+    homeDirectory =
+      if pkgs.stdenv.isDarwin
+      then "/Users/${userConfig.name}"
+      else "/home/${userConfig.name}";
+    stateVersion = "25.11";
+    packages = with pkgs; [
+      gh
+      wget
+      curl
+      htop
+      firefox
+      just
+    ];
+  };
 
   programs.git = {
     enable = true;
@@ -31,12 +40,4 @@
     package = pkgs.direnv.overrideAttrs (_: { doCheck = false; });
   };
 
-  home.packages = with pkgs; [
-    gh
-    wget
-    curl
-    htop
-    firefox
-    just
-  ];
 }

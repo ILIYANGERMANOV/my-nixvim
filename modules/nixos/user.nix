@@ -30,7 +30,7 @@ in
     users.users.${cfg.name} = {
       isNormalUser = true;
       description = cfg.fullName;
-      extraGroups = cfg.extraGroups;
+      inherit (cfg) extraGroups;
       hashedPasswordFile = config.sops.secrets."${cfg.name}-password".path;
     };
 

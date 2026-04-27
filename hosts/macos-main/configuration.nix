@@ -1,4 +1,4 @@
-{ ... }: {
+_: {
   networking.hostName = "macos-main";
 
   myConfig.user = {

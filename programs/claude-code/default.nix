@@ -1,4 +1,4 @@
-{ pkgs, lib ? pkgs.lib }:
+{ pkgs, ... }:
 
 let
   statusline = import ./statusline.nix { inherit pkgs; };

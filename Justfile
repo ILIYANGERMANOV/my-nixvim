@@ -9,3 +9,13 @@ import 'just/nix-darwin/post-install.just'
 # Show available recipes
 default:
     @just --list
+
+# Lint all Nix files
+lint:
+    statix check .
+    deadnix .
+
+# Run all checks (lint + flake check)
+check:
+    just lint
+    nix flake check

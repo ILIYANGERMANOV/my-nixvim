@@ -1,4 +1,4 @@
-{ ... }: {
+_: {
   networking.hostName = "macos-work";
 
   # Determinate Nix manages its own daemon — disable nix-darwin's Nix management to avoid conflict.

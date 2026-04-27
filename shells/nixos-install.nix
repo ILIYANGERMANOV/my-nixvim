@@ -1,7 +1,7 @@
 { pkgs, inputs, self }:
 let
-  system = pkgs.stdenv.hostPlatform.system;
-  isLinux = pkgs.stdenv.hostPlatform.isLinux;
+  inherit (pkgs.stdenv.hostPlatform) system;
+  inherit (pkgs.stdenv.hostPlatform) isLinux;
   nvim = inputs.nixvim.legacyPackages.${system}.makeNixvimWithModule {
     inherit pkgs;
     module = import "${self}/programs/nvim";
