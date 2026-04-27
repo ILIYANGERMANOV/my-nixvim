@@ -27,10 +27,13 @@
         "ctrl+t=new_tab"
         "ctrl+w=close_surface"
         "ctrl+tab=next_tab"
+        "ctrl+shift+tab=previous_tab"
         "ctrl+shift+enter=new_split:right"
         "ctrl+shift+down=new_split:down"
         "ctrl+left=goto_split:left"
         "ctrl+right=goto_split:right"
+        "super+n=new_window"
+        "ctrl+shift+n=new_window"
       ];
     };
   };
@@ -56,6 +59,10 @@
       ga = "git add";
       gc = "git commit -m";
 
+      # Git — branches
+      gb = "git branch";
+      gbd = "git branch -D";
+
       # Legacy checkout (kept for muscle memory / detached HEAD workflows)
       gco = "git checkout";
       gcob = "git checkout -b";
@@ -73,6 +80,11 @@
       grh = "git reset --hard";
       grs = "git reset --soft";
     };
+  };
+
+  programs.fzf = {
+    enable = true;
+    enableZshIntegration = true;
   };
 
   programs.zoxide = {
@@ -94,7 +106,6 @@
 
   home.packages = with pkgs; [
     eza
-    fzf
     ripgrep
     fd
     jq
