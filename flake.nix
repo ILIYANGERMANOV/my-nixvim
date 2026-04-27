@@ -34,8 +34,6 @@
       lib = import ./lib { inherit inputs; root = self; };
     in
     {
-      lib = { inherit (lib) mkHaskellNvim mkDarwinSystem; };
-
       devShells = lib.forAllSystems (pkgs: {
         nixos-install = import ./shells/nixos-install.nix { inherit pkgs inputs self; };
         darwin-install = import ./shells/darwin-install.nix { inherit pkgs inputs self; };

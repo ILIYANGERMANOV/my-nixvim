@@ -70,9 +70,4 @@
       mdx = [ "biome" ];
     };
   };
-
-  extraPackages = [
-    pkgs.nodePackages.typescript-language-server
-    pkgs.vscode-langservers-extracted
-  ];
 }
