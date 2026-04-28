@@ -5,6 +5,13 @@ Step-by-step guide for installing (or re-installing) NixOS on a machine using di
 > [!WARNING]
 > Every disko step is **destructive** — it wipes and reformats the target disk. Double-check the device name before running anything.
 
+> [!TIP]
+> After cloning the repo, enter the NixOS install dev shell — it provides `just`, `git`, `age`, `sbctl`, `sops`, `nvim`, and all other tools needed for the install:
+> ```bash
+> nix develop .#nixos-install
+> ```
+> Most manual commands in Part 2 have a `just` shortcut available inside this shell. Run `just` to see all available recipes.
+
 ---
 
 ## Overview of what you'll end up with
@@ -61,7 +68,17 @@ See /hosts/lenovo-old/configuration.nix.
 
 > Tip: check `dmesg | grep -E 'nvme|ahci|xhci'` on a live ISO to confirm which kernel modules your hardware needs.
 
-### 1.5 Commit and push
+### 1.5 Set the root password
+
+The root password is stored as a SOPS secret. Hash a new password and save it into `secrets/secrets.yaml` before committing:
+
+```bash
+just new-root-password
+```
+
+This hashes the password with yescrypt, clears the screen (so the plaintext is gone from scroll-back), then opens `secrets/secrets.yaml` in your editor for you to paste the hash in.
+
+### 1.6 Commit and push
 
 Push the new host config before you boot into the live ISO — you'll clone it from there.
 
@@ -81,11 +98,20 @@ lsblk
 
 Confirm the device name (e.g. `/dev/nvme0n1`, `/dev/sda`). Make sure it matches what's in `disk-config.nix`.
 
+> [!TIP]
+> `just list-disks` shows only whole disks (no partitions) with their size and model — easier to read than raw `lsblk` output.
+
 ### 2.3 Clone the repo
 
 ```bash
 nix-shell -p git --run "git clone <repo-url> /tmp/nixos-config"
 cd /tmp/nixos-config
+```
+
+Then enter the install dev shell to get all required tools (`just`, `age`, `sbctl`, `sops`, etc.):
+
+```bash
+nix develop .#nixos-install
 ```
 
 ### 2.4 Partition, format, and mount (destructive)
@@ -95,6 +121,9 @@ sudo nix run github:nix-community/disko -- \
   --mode disko \
   --flake /tmp/nixos-config#<hostname>
 ```
+
+> [!TIP]
+> `just disko <hostname>` runs the same command with less typing.
 
 The `--flake` flag is required. `disk-config.nix` only sets `security.diskEncryption.device` — the full disk layout lives in `modules/nixos/security/disk-encryption.nix` and is only reachable through the NixOS module system, which the flake evaluation provides.
 
@@ -139,6 +168,9 @@ sudo grep 'public key' /mnt/var/lib/sops-age/keys.txt
 
 You will also need the public key in step 2.10 to authorise this machine in `.sops.yaml`.
 
+> [!TIP]
+> `just generate-age-key` does all of the above and additionally pauses to remind you to save the key to BitWarden before clearing the screen.
+
 ---
 
 #### Path B — Reinstall (key already exists in BitWarden)
@@ -154,6 +186,9 @@ sudo grep 'public key' /mnt/var/lib/sops-age/keys.txt
 ```
 
 No changes to `.sops.yaml` are needed — the key is the same one already authorised.
+
+> [!TIP]
+> `just restore-age-key` does all of the above. It prompts you to paste the full `keys.txt` content from BitWarden (via stdin / Ctrl+D), writes it with correct permissions, and validates that an `AGE-SECRET-KEY` line is present.
 
 ---
 
@@ -180,6 +215,9 @@ sudo mkdir -p /etc/secureboot
 sudo cp -a /mnt/etc/secureboot/* /etc/secureboot/
 ```
 
+> [!TIP]
+> `just setup-secure-boot` runs all three steps above in one go.
+
 ### 2.7 Install NixOS
 
 ```bash
@@ -187,6 +225,9 @@ sudo nixos-install --flake /tmp/nixos-config#<hostname> --no-root-passwd
 ```
 
 This builds the system closure, copies it into `/mnt/nix/store`, and writes the lanzaboote-signed bootloader.
+
+> [!TIP]
+> `just nixos-install <hostname>` runs the same command.
 
 ### 2.8 Reboot
 
@@ -233,6 +274,13 @@ sudo nixos-rebuild switch --flake /path/to/repo#<hostname>
 Re-installing is identical to Part 2. There is nothing special to do in the repo — the host config already exists.
 
 In step 2.5 use **Path B** (restore from BitWarden). The key stays the same, so `.sops.yaml` does not need updating and step 2.8 can be skipped.
+
+> [!TIP]
+> For a reinstall, steps 2.4 → 2.5 (Path B) → 2.6 → 2.7 can be collapsed into a single command:
+> ```bash
+> just install <hostname>
+> ```
+> This runs `disko`, `restore-age-key`, `setup-secure-boot`, and `nixos-install` in sequence. For a **new host** (Path A), run `just generate-age-key` first (before `just disko`), then proceed with the remaining steps manually.
 
 ---
 
