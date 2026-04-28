@@ -81,6 +81,21 @@
         grh = "git reset --hard";
         grs = "git reset --soft";
       };
+
+      initContent = ''
+        # Delete all local branches except main and any branches passed as args
+        # Usage: gbd_all [branch1 branch2 ...]
+        gbd_all() {
+          local keep=("main" "$@")
+          git branch | grep -v '^\*' | while read -r branch; do
+            local skip=0
+            for k in "''${keep[@]}"; do
+              [[ "$branch" == "$k" ]] && skip=1 && break
+            done
+            [[ $skip -eq 0 ]] && git branch -D "$branch"
+          done
+        }
+      '';
     };
 
     fzf = {

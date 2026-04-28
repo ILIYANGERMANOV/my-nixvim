@@ -7,6 +7,7 @@ let
     module = import "${self}/programs/nvim";
     extraSpecialArgs = { profile = "sops"; };
   };
+  claudeCode = import "${self}/programs/claude-code" { inherit pkgs; };
 in
 pkgs.mkShell {
   packages = with pkgs; [
@@ -19,9 +20,10 @@ pkgs.mkShell {
     whois # provides mkpasswd for hashing passwords
   ] ++ pkgs.lib.optionals isLinux [
     sbctl # Secure Boot key creation and enrollment (Linux-only)
-  ];
+  ] ++ claudeCode.packages;
   shellHook = ''
     export EDITOR=nvim
+    ${claudeCode.activationScript}
 
     echo "NixOS install shell loaded."
     echo ""

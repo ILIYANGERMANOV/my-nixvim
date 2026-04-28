@@ -39,7 +39,7 @@ let
   forAllSystems = f:
     lib.genAttrs
       [ "x86_64-linux" "aarch64-linux" "x86_64-darwin" "aarch64-darwin" ]
-      (system: f (import inputs.nixpkgs { inherit system; }));
+      (system: f (import inputs.nixpkgs { inherit system; config.allowUnfree = true; }));
 in
 {
   inherit mkNixosSystem mkDarwinSystem forAllSystems;

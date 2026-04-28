@@ -22,6 +22,21 @@ macOS (Apple Silicon or Intel)
 
 ---
 
+## Recommended: use the darwin-install dev shell
+
+After Nix is installed (Part 1), enter the dedicated dev shell from the repo root:
+
+```bash
+nix develop .#darwin-install
+```
+
+This drops you into a shell with everything you need pre-loaded: `just`, `git`, `nvim` (with Nix LSP), and `nixpkgs-fmt`. It also prints a quick-reference of all available `just` commands on entry.
+
+> [!TIP]
+> All `just` commands in this guide can be run directly from inside this shell — no need to install anything else manually.
+
+---
+
 ## Part 1 — Install Nix
 
 Skip this part if Nix is already installed (`nix --version` prints something).
@@ -79,6 +94,9 @@ Verify:
 scutil --get LocalHostName   # should print: macos-main
 ```
 
+> [!TIP]
+> Or use the just command: `just darwin-set-hostname macos-main`
+
 **Why three commands?** macOS has three separate hostname values: `LocalHostName` (Bonjour/mDNS), `ComputerName` (Finder/Sharing), and `HostName` (BSD kernel). nix-darwin's `networking.hostName` sets all three during activation, but you need them correct *before* the first build.
 
 ### 2.4 Back up existing `/etc` shell files
@@ -89,6 +107,9 @@ nix-darwin replaces `/etc/zshrc` and `/etc/bashrc` with its own versions. Pre-em
 sudo mv /etc/zshrc /etc/zshrc.before-nix-darwin
 sudo mv /etc/bashrc /etc/bashrc.before-nix-darwin
 ```
+
+> [!TIP]
+> Or use the just command: `just darwin-backup-etc`
 
 > [!NOTE]
 > Any new terminal you open after this step will be missing default macOS PATH entries until the bootstrap completes. Stay in your current terminal until after step 3.2.
@@ -111,6 +132,9 @@ sudo nix run --extra-experimental-features 'nix-command flakes' \
   'github:nix-darwin/nix-darwin/nix-darwin-25.11#darwin-rebuild' \
   -- switch --flake .#macos-main
 ```
+
+> [!TIP]
+> Or use the just command: `just darwin-bootstrap macos-main`
 
 **Why `sudo`?** Recent nix-darwin requires activation to run as root — it writes to `/etc`, `/run/current-system`, and registers launchd services.
 
@@ -208,11 +232,17 @@ cd ~/ivy-apps/repo/nixos
 darwin-rebuild switch --flake .#macos-main
 ```
 
+> [!TIP]
+> Or use the just command: `just darwin-rebuild macos-main`
+
 ### Dry-run (check the config compiles without applying)
 
 ```bash
 darwin-rebuild build --flake .#macos-main
 ```
+
+> [!TIP]
+> Or use the just command: `just darwin-build macos-main`
 
 ### Roll back to the previous generation
 
@@ -222,11 +252,17 @@ darwin-rebuild rollback
 
 nix-darwin keeps every previous system generation — rollback is instant with no rebuilding.
 
+> [!TIP]
+> Or use the just command: `just darwin-rollback`
+
 ### List all generations
 
 ```bash
 darwin-rebuild --list-generations
 ```
+
+> [!TIP]
+> Or use the just command: `just darwin-generations`
 
 ---
 
