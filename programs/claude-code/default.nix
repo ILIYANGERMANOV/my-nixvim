@@ -2,6 +2,7 @@
 
 let
   statusline = import ./statusline.nix { inherit pkgs; };
+  lspPlugins = import ./lsp-plugins.nix;
 
   # Merges managed keys into ~/.claude/settings.json, preserving user-set values.
   settingsMerge = pkgs.writeShellApplication {
@@ -14,7 +15,9 @@ let
       [ ! -f "$settings_file" ] && printf '{}' > "$settings_file"
       tmp=$(mktemp)
       jq --arg cmd "$statusline_cmd" \
-        '. + {statusLine: {type: "command", command: $cmd}, autoMemoryEnabled: false, effortLevel: "medium"}' \
+        --argjson lsp '${builtins.toJSON lspPlugins.enabled}' \
+        '. + {statusLine: {type: "command", command: $cmd}, autoMemoryEnabled: false, effortLevel: "medium"}
+         | .enabledPlugins = ((.enabledPlugins // {}) + $lsp)' \
         "$settings_file" > "$tmp" && mv "$tmp" "$settings_file"
     '';
   };
