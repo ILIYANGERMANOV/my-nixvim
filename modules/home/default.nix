@@ -3,6 +3,7 @@
     ./nvim.nix
     ./terminal.nix
     ./claude-code.nix
+    ./bitwarden.nix
     ./languages/typescript.nix
     ./languages/haskell.nix
     ./languages/nix.nix
