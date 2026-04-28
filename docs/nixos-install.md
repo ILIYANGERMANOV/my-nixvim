@@ -96,10 +96,7 @@ Download from https://nixos.org/download and write it to a USB drive. Boot the t
 lsblk
 ```
 
-Confirm the device name (e.g. `/dev/nvme0n1`, `/dev/sda`). Make sure it matches what's in `disk-config.nix`.
-
-> [!TIP]
-> `just list-disks` shows only whole disks (no partitions) with their size and model — easier to read than raw `lsblk` output.
+Confirm the device name (e.g. `/dev/nvme0n1`, `/dev/sda`). Make sure it matches what's in `disk-config.nix`. Once the repo is cloned (step 2.3), `just list-disks` is a cleaner alternative — it shows only whole disks with their size and model.
 
 ### 2.3 Clone the repo
 
@@ -122,9 +119,6 @@ sudo nix run github:nix-community/disko -- \
   --flake /tmp/nixos-config#<hostname>
 ```
 
-> [!TIP]
-> `just disko <hostname>` runs the same command with less typing.
-
 The `--flake` flag is required. `disk-config.nix` only sets `security.diskEncryption.device` — the full disk layout lives in `modules/nixos/security/disk-encryption.nix` and is only reachable through the NixOS module system, which the flake evaluation provides.
 
 This will:
@@ -133,6 +127,9 @@ This will:
 3. Create the LUKS2 container — **you will be prompted for a passphrase. Choose a strong one and do not lose it.**
 4. Format the inner volume as btrfs with subvolumes.
 5. Mount everything under `/mnt`.
+
+> [!TIP]
+> `just disko <hostname>` runs the same command with less typing.
 
 ### 2.5 Set up the SOPS age key
 
@@ -280,7 +277,7 @@ In step 2.5 use **Path B** (restore from BitWarden). The key stays the same, so 
 > ```bash
 > just install <hostname>
 > ```
-> This runs `disko`, `restore-age-key`, `setup-secure-boot`, and `nixos-install` in sequence. For a **new host** (Path A), run `just generate-age-key` first (before `just disko`), then proceed with the remaining steps manually.
+> This runs `disko`, `restore-age-key`, `setup-secure-boot`, and `nixos-install` in sequence. For a **new host** (Path A), run the steps individually: `just disko <hostname>`, then `just generate-age-key` (requires `/mnt` to be mounted), then `just setup-secure-boot`, then `just nixos-install <hostname>`.
 
 ---
 
