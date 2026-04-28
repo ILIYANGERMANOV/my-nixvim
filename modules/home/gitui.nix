@@ -1,4 +1,4 @@
-{ pkgs, ... }: {
+_: {
   programs.gitui = {
     enable = true;
 
