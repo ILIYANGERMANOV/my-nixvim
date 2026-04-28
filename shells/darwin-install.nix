@@ -6,6 +6,7 @@ let
     module = import "${self}/programs/nvim";
     extraSpecialArgs = { profile = "nix"; };
   };
+  claudeCode = import "${self}/programs/claude-code" { inherit pkgs; };
 in
 pkgs.mkShell {
   packages = with pkgs; [
@@ -14,8 +15,9 @@ pkgs.mkShell {
     nvim        # edit host config and flake.nix before bootstrapping
     nil         # Nix LSP (inside nvim)
     nixpkgs-fmt # Nix formatter (inside nvim)
-  ];
+  ] ++ claudeCode.packages;
   shellHook = ''
+    ${claudeCode.activationScript}
     echo "Darwin install shell loaded."
     echo ""
     echo "Quick reference:"
