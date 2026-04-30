@@ -27,7 +27,7 @@ in
           enable = true;
           settings = {
             backgroundColour = "#000000";
-            timeout = 2000;
+            timeout = 1500;
           };
         };
         noice = {
